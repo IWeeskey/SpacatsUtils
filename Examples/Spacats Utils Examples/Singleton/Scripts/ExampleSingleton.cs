@@ -32,9 +32,9 @@ namespace Spacats.Utils
             base.SingletonSharedUpdate();
         }
 
-        protected override void OnApplicationQuit()
+        protected override void SingletonOnApplicationQuit()
         {
-            base.OnApplicationQuit();
+            base.SingletonOnApplicationQuit();
         }
     }
 }

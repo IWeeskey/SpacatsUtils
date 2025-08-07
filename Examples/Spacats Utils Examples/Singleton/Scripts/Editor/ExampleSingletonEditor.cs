@@ -12,7 +12,6 @@ namespace Spacats.Utils
             ExampleSingleton targetScript = (ExampleSingleton)target;
 
             GUILayout.TextArea("Is Instance: " + targetScript.IsInstance);
-
             DrawDefaultInspector();
         }
     }

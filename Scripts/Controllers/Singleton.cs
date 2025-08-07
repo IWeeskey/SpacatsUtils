@@ -34,14 +34,18 @@ namespace Spacats.Utils
 
         public static bool HasInstance => _instance != null && !_isDestroyed;
 
-        protected virtual void SingletonAwake() { TryToShowLog("SingletonAwake", 0, true); }
-        protected virtual void SingletonOnEnable() { TryToShowLog("SingletonOnEnable", 0, true); }
-        protected virtual void SingletonOnDisable() { TryToShowLog("SingletonOnDisable", 0, true); }
+        protected virtual void SingletonAwake() { CheckHierarchy(); TryToShowLog("SingletonAwake", 0, true); }
+        protected virtual void SingletonOnEnable() { CheckHierarchy(); TryToShowLog("SingletonOnEnable", 0, true); }
+        protected virtual void SingletonOnDisable() { CheckHierarchy(); TryToShowLog("SingletonOnDisable", 0, true); }
 
         /// <summary>
         /// Same as basic unity Update()
         /// </summary>
         protected virtual void SingletonUpdate() { }
+        /// <summary>
+        /// Same as basic unity LateUpdate()
+        /// </summary>
+        protected virtual void SingletonLateUpdate() { }
         /// <summary>
         /// Triggers every update + every scene gui. So it can work smoothly while in editor.
         /// </summary>
@@ -51,6 +55,8 @@ namespace Spacats.Utils
 
         public bool IsInstance => Instance == this;
 
+        [Tooltip("Set this gameobject to be always on top in hierarchy")]
+        public bool AlwaysOnTop = false;
 
         [Tooltip("Show basic logs, defined by inheritor (derived, child class)")]
         public bool ShowLogs = false;
@@ -87,7 +93,7 @@ namespace Spacats.Utils
             }
         }
 
-        protected virtual void OnEnable()
+        private void OnEnable()
         {
             if (!IsInstance) return;
             SingletonOnEnable();
@@ -96,7 +102,7 @@ namespace Spacats.Utils
 #endif
         }
 
-        protected virtual void OnDisable()
+        private void OnDisable()
         {
             if (!IsInstance) return;
             SingletonOnDisable();
@@ -111,14 +117,20 @@ namespace Spacats.Utils
             SingletonSharedUpdate();
         }
 
-        protected virtual void Update()
+        private void Update()
         {
             if (!IsInstance) return;
             SingletonUpdate();
             SingletonSharedUpdate();
         }
 
-        protected virtual void OnApplicationQuit()
+        private void LateUpdate()
+        {
+            if (!IsInstance) return;
+            SingletonLateUpdate();
+        }
+
+        private void OnApplicationQuit()
         {
             if (!IsInstance) return;
 
@@ -126,13 +138,21 @@ namespace Spacats.Utils
             SingletonOnApplicationQuit();
         }
 
-        protected virtual void OnDestroy()
+        private void OnDestroy()
         {
             if (!IsInstance) return;
             _isDestroyed = true;
             _instance = null;
             SingletonOnDestroy();
         }
+
+        protected virtual void CheckHierarchy()
+        {
+            if (!AlwaysOnTop) return;
+            if (transform.parent != null) transform.parent = null;
+            transform.SetAsFirstSibling();
+        }
+
 
         /// <summary>
         /// Log types: 
