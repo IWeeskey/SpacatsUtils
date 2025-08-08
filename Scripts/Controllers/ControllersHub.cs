@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using System.Linq;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -14,6 +15,11 @@ namespace Spacats.Utils
     public class ControllersHub : Singleton<ControllersHub>
     {
         [SerializeField] private List<Controller> _controllers = new List<Controller>();
+
+        public void Test()
+        {
+            SceneManagerHelper.LoadScene("ControllersHubScene 2");
+        }
 
         private void RefreshName()
         {
@@ -28,8 +34,8 @@ namespace Spacats.Utils
         protected override void SingletonSetDefaultParameters()
         {
             base.SingletonSetDefaultParameters();
-            ShowLogs = true;
-            ShowSingletonLogs = true;
+            ShowLogs = false;
+            ShowSingletonLogs = false;
             AlwaysOnTop = true;
             CheckHierarchy();
         }
@@ -38,6 +44,7 @@ namespace Spacats.Utils
         {
             base.SingletonOnEnable();
             RefreshName();
+            Clear();
         }
 
         protected override void SingletonOnDisable()
@@ -50,6 +57,7 @@ namespace Spacats.Utils
         protected override void SingletonOnDestroy()
         {
             base.SingletonOnDestroy();
+            HandleDestroyLogic();
         }
 
         protected override void SingletonOnApplicationQuit()
@@ -62,6 +70,7 @@ namespace Spacats.Utils
             base.SingletonUpdate();
             foreach (Controller controller in _controllers)
             {
+                if (controller == null) continue;
                 if (!controller.ExecuteInEditor && !Application.isPlaying)
                 {
                     continue;
@@ -76,6 +85,7 @@ namespace Spacats.Utils
 
             foreach (Controller controller in _controllers)
             {
+                if (controller == null) continue;
                 if (!controller.ExecuteInEditor && !Application.isPlaying)
                 {
                     continue;
@@ -92,6 +102,7 @@ namespace Spacats.Utils
 
             foreach (Controller controller in _controllers)
             {
+                if (controller == null) continue;
                 controller.ControllerOnSceneGUI(sceneView);
             }
         }
@@ -103,6 +114,7 @@ namespace Spacats.Utils
 
             foreach (Controller controller in _controllers)
             {
+                if (controller == null) continue;
                 if (!controller.ExecuteInEditor && !Application.isPlaying)
                 {
                     continue;
@@ -111,6 +123,18 @@ namespace Spacats.Utils
             }
         }
         #endregion
+
+        private void HandleDestroyLogic()
+        {
+            foreach (Controller controller in _controllers)
+            {
+                if (controller == null) continue;
+                controller.transform.parent = null;
+                controller.enabled = true;
+            }
+        }
+
+
         private void Clear()
         {
             TryToShowLog("Clear");
@@ -125,8 +149,38 @@ namespace Spacats.Utils
                 return false;
             }
 
+            if (!IsUnique(controller))
+            {
+                TryToShowLog("Controller is not unique by tag: " + controller.gameObject.name, 1);
+                return false;
+            }
+
             TryToShowLog("RegisterController: " + controller.gameObject.name);
             _controllers.Add(controller);
+            return true;
+        }
+
+        private bool IsUnique(Controller controller)
+        {
+            Debug.Log("CHECK: " + controller.GetType());
+            var targetType = controller.GetType();
+            var group = _controllers .Where(c => c.GetType() == targetType).ToList();
+
+            TryToShowLog($"Controller: {targetType.Name}, count: {group.Count}", 1);
+
+            var values = group.Select(c => c.UniqueTag).ToList();
+
+            if (values.Count == 0) return true;
+
+            foreach (string uTag in values)
+            {
+                if (string.Equals(uTag, controller.UniqueTag))
+                {
+                    TryToShowLog($"{targetType.Name} same tag found!", 1);
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -134,6 +188,11 @@ namespace Spacats.Utils
         {
             TryToShowLog("UnRegisterController: " + controller.gameObject.name);
             return _controllers.Remove(controller);
+        }
+
+        public T GetController<T>(string tag = "") where T : Controller
+        {
+            return _controllers.OfType<T>().FirstOrDefault();
         }
     }
 }

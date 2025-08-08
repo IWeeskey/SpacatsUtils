@@ -1,7 +1,10 @@
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
+
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace Spacats.Utils
@@ -11,8 +14,7 @@ namespace Spacats.Utils
     public class Singleton<T> : MonoBehaviour where T : Singleton<T>
     {
         private static T _instance;
-        protected static bool _applicationIsQuitting = false;
-        protected static bool _isDestroyed = false;
+        protected bool _applicationIsQuitting = false;
         public static T Instance
         {
             get
@@ -33,7 +35,7 @@ namespace Spacats.Utils
             }
         }
 
-        public static bool HasInstance => _instance != null && !_isDestroyed;
+        public static bool HasInstance => _instance != null;
 
         protected virtual void SingletonAwake() { CheckHierarchy(); TryToShowLog("Awake", 0, true); }
         protected virtual void SingletonOnEnable() { CheckHierarchy(); TryToShowLog("OnEnable", 0, true); }
@@ -76,11 +78,10 @@ namespace Spacats.Utils
             if (_instance == null || _applicationIsQuitting)
             {
                 _instance = this as T;
-                _isDestroyed = false;
                 _applicationIsQuitting = false;
                 if (Application.isPlaying) DontDestroyOnLoad(gameObject);
                 SingletonAwake();
-
+                SceneManagerHelper.MarkActiveSceneDirty();
                 return;
             }
             if (IsInstance) return;
@@ -137,17 +138,12 @@ namespace Spacats.Utils
 
         private void OnApplicationQuit()
         {
-            if (!IsInstance) return;
-
             _applicationIsQuitting = true;
             SingletonOnApplicationQuit();
         }
 
         private void OnDestroy()
         {
-            if (!IsInstance) return;
-            _isDestroyed = true;
-            _instance = null;
             SingletonOnDestroy();
         }
 

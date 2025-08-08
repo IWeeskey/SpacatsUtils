@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace Spacats.Utils
@@ -13,7 +13,9 @@ namespace Spacats.Utils
     [Serializable]
     public class Controller : MonoBehaviour
     {
-        private bool _applicationIsQuitting = false;
+        public string UniqueTag = "";
+        protected bool _applicationIsQuitting = false;
+        protected bool _registered = false;
 
         [Tooltip("Should it be executed while in editor")]
         public bool ExecuteInEditor = false;
@@ -24,8 +26,8 @@ namespace Spacats.Utils
         [Tooltip("Show controller logs for testing purposes, such as 'Awake', 'OnEnable' etc.")]
         public bool ShowControllerLogs = false;
 
-        protected virtual void ControllerAwake() { RefreshName(); CheckHierarchy(); TryToShowLog("Awake", 0, true); }
-        protected virtual void ControllerOnEnable() { RefreshName(); CheckHierarchy(); TryToShowLog("OnEnable", 0, true); }
+        protected virtual void ControllerAwake() { TryToShowLog("Awake", 0, true); }
+        protected virtual void ControllerOnEnable() { TryToShowLog("OnEnable", 0, true); }
         protected virtual void ControllerOnDisable() { TryToShowLog("OnDisable", 0, true); }
         protected virtual void ControllerOnDestroy() { TryToShowLog("OnDestroy", 0, true); }
         protected virtual void ControllerOnApplicationQuit() { TryToShowLog("OnApplicationQuit", 0, true); }
@@ -49,22 +51,49 @@ namespace Spacats.Utils
 
         private void Awake()
         {
+            RefreshName(); 
+            CheckHierarchy();
+            SceneManagerHelper.MarkActiveSceneDirty();
+            if (!ExecuteInEditor && !Application.isPlaying) return;
             ControllerAwake();
         }
 
         private void OnEnable()
         {
-            ControllersHub.Instance.RegisterController(this);
+            bool registerResult = ControllersHub.Instance.RegisterController(this);
+            if (!registerResult)
+            {
+                TryToShowLog("Already registered!", 1, true);
+
+                if (!Application.isPlaying)
+                {
+                    DestroyImmediate(gameObject);
+                }
+                else
+                {
+                    Destroy(gameObject);
+                }
+                return;
+            }
+
+            _registered = true;
+
+            RefreshName(); 
+            CheckHierarchy();
+
+            if (!ExecuteInEditor && !Application.isPlaying) return;
             ControllerOnEnable();
         }
 
         private void OnDisable()
         {
-            ControllersHub.Instance.UnRegisterController(this);
+            if (_registered) ControllersHub.Instance.UnRegisterController(this);
+            if (!ExecuteInEditor && !Application.isPlaying) return;
             ControllerOnDisable();
         }
         private void OnDestroy()
         {
+            if (!ExecuteInEditor && !Application.isPlaying) return;
             ControllerOnDestroy();
         }
 
@@ -87,7 +116,7 @@ namespace Spacats.Utils
             if (isControllerLog && !ShowControllerLogs && logType!=2) return;
             if (!isControllerLog && !ShowLogs && logType != 2) return;
 
-            string prefix = $"[Spacats Controller: {gameObject.name}] ";
+            string prefix = $"[Spacats Controller: {gameObject.name} {UniqueTag}] ";
 
             switch (logType)
             {
@@ -108,5 +137,6 @@ namespace Spacats.Utils
             Transform hubTransform = ControllersHub.Instance.transform;
             if (transform.parent != hubTransform) transform.parent = hubTransform;
         }
+
     }
 }
