@@ -26,6 +26,7 @@ namespace Spacats.Utils
                         GameObject go = new GameObject();
                         go.name = typeof(T).Name + "";
                         _instance = go.AddComponent<T>();
+                        _instance.SingletonSetDefaultParameters();
                     }
                 }
                 return _instance;
@@ -34,9 +35,13 @@ namespace Spacats.Utils
 
         public static bool HasInstance => _instance != null && !_isDestroyed;
 
-        protected virtual void SingletonAwake() { CheckHierarchy(); TryToShowLog("SingletonAwake", 0, true); }
-        protected virtual void SingletonOnEnable() { CheckHierarchy(); TryToShowLog("SingletonOnEnable", 0, true); }
-        protected virtual void SingletonOnDisable() { CheckHierarchy(); TryToShowLog("SingletonOnDisable", 0, true); }
+        protected virtual void SingletonAwake() { CheckHierarchy(); TryToShowLog("Awake", 0, true); }
+        protected virtual void SingletonOnEnable() { CheckHierarchy(); TryToShowLog("OnEnable", 0, true); }
+        protected virtual void SingletonOnDisable() { CheckHierarchy(); TryToShowLog("OnDisable", 0, true); }
+        protected virtual void SingletonOnDestroy() { TryToShowLog("OnDestroy", 0, true); }
+        protected virtual void SingletonOnApplicationQuit() {  TryToShowLog("OnApplicationQuit", 0, true);}
+        protected virtual void SingletonSetDefaultParameters() { TryToShowLog("SetDefaultParameters", 0, true); }
+
 
         /// <summary>
         /// Same as basic unity Update()
@@ -50,8 +55,6 @@ namespace Spacats.Utils
         /// Triggers every update + every scene gui. So it can work smoothly while in editor.
         /// </summary>
         protected virtual void SingletonSharedUpdate() { }
-        protected virtual void SingletonOnDestroy() { TryToShowLog("SingletonOnDestroy", 0, true); }
-        protected virtual void SingletonOnApplicationQuit() {  TryToShowLog("SingletonOnApplicationQuit", 0, true);}
 
         public bool IsInstance => Instance == this;
 
@@ -111,11 +114,13 @@ namespace Spacats.Utils
 #endif
         }
 
+#if UNITY_EDITOR
         private void DuringSceneGui(SceneView sView)
         {
             SingletonOnSceneGUI(sView);
             SingletonSharedUpdate();
         }
+#endif
 
         private void Update()
         {
@@ -146,7 +151,7 @@ namespace Spacats.Utils
             SingletonOnDestroy();
         }
 
-        protected virtual void CheckHierarchy()
+        public virtual void CheckHierarchy()
         {
             if (!AlwaysOnTop) return;
             if (transform.parent != null) transform.parent = null;
@@ -164,8 +169,8 @@ namespace Spacats.Utils
         /// <param name="logType"></param>
         protected virtual void TryToShowLog(string message, int logType = 0, bool isSingletonLog = false)
         {
-            if (isSingletonLog && !ShowSingletonLogs) return;
-            if (!isSingletonLog && !ShowLogs) return;
+            if (isSingletonLog && !ShowSingletonLogs && logType != 2) return;
+            if (!isSingletonLog && !ShowLogs && logType != 2) return;
 
             string prefix = $"[Spacats Singleton: {typeof(T).Name}] ";
 

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -41,13 +42,14 @@ namespace Spacats.Utils
 
         private void TryDrawSingletonParameters()
         {
+            ControllersHub targetScript = (ControllersHub)target;
             _showSingletonSettings = EditorGUILayout.Foldout(_showSingletonSettings, "Singleton Parameters", true);
             if (!_showSingletonSettings) return;
 
-            //EditorGUILayout.LabelField("Singleton parameters", EditorStyles.boldLabel);
-
             SerializedProperty alwaysOnTop = serializedObject.FindProperty("AlwaysOnTop");
             EditorGUILayout.PropertyField(alwaysOnTop);
+            targetScript.CheckHierarchy();
+
 
             SerializedProperty showLogs = serializedObject.FindProperty("ShowLogs");
             EditorGUILayout.PropertyField(showLogs);
@@ -60,6 +62,10 @@ namespace Spacats.Utils
         {
             ControllersHub targetScript = (ControllersHub)target;
             GUILayout.TextArea("Is Instance: " + targetScript.IsInstance);
+
+            SerializedProperty controllersList = serializedObject.FindProperty("_controllers");
+            EditorGUILayout.PropertyField(controllersList);
+
         }
 
         private void DrawDefaultTab()
@@ -68,3 +74,4 @@ namespace Spacats.Utils
         }
     }
 }
+#endif
