@@ -16,10 +16,7 @@ namespace Spacats.Utils
     {
         [SerializeField] private List<Controller> _controllers = new List<Controller>();
 
-        public void Test()
-        {
-            SceneManagerHelper.LoadScene("ControllersHubScene 2");
-        }
+
 
         private void RefreshName()
         {
@@ -134,7 +131,6 @@ namespace Spacats.Utils
             }
         }
 
-
         private void Clear()
         {
             TryToShowLog("Clear");
@@ -162,7 +158,6 @@ namespace Spacats.Utils
 
         private bool IsUnique(Controller controller)
         {
-            Debug.Log("CHECK: " + controller.GetType());
             var targetType = controller.GetType();
             var group = _controllers .Where(c => c.GetType() == targetType).ToList();
 
@@ -192,7 +187,28 @@ namespace Spacats.Utils
 
         public T GetController<T>(string tag = "") where T : Controller
         {
-            return _controllers.OfType<T>().FirstOrDefault();
+            var controllersOfType = _controllers.OfType<T>();
+
+            T result;
+
+            if (string.IsNullOrEmpty(tag))
+            {
+                result = controllersOfType.FirstOrDefault();
+                if (result == null)
+                {
+                    TryToShowLog($"Controller of type {typeof(T).Name} not found.", 2);
+                }
+            }
+            else
+            {
+                result = controllersOfType.FirstOrDefault(c => c.UniqueTag == tag);
+                if (result == null)
+                {
+                    TryToShowLog($"Controller of type {typeof(T).Name} with tag '{tag}' not found.", 2);
+                }
+            }
+
+            return result;
         }
     }
 }

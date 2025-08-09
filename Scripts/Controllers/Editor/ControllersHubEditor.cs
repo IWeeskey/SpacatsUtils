@@ -35,11 +35,6 @@ namespace Spacats.Utils
         {
             ControllersHub targetScript = (ControllersHub)target;
 
-            if (GUILayout.Button("TEST"))
-            {
-                targetScript.Test();
-            }
-
             TryDrawSingletonParameters();
 
             serializedObject.ApplyModifiedProperties();

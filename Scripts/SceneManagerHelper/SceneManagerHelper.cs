@@ -10,6 +10,8 @@ namespace Spacats.Utils
 {
     public static class SceneManagerHelper
     {
+        private static bool _isLoading = false;
+        public static bool IsLoading => _isLoading;
         public static void MarkActiveSceneDirty()
         {
             if (Application.isPlaying) return;
@@ -50,29 +52,34 @@ namespace Spacats.Utils
         }
 
         public static Coroutine LoadSceneAsync(MonoBehaviour runner, string sceneName,
-            Action<float> onProgress = null, Action onCompleted = null,
+            Action<float> onProgress = null,
             LoadSceneMode mode = LoadSceneMode.Single)
         {
-            return runner.StartCoroutine(LoadSceneRoutine(sceneName, onProgress, onCompleted, mode));
+            if (_isLoading) return null;
+            return runner.StartCoroutine(LoadSceneRoutine(sceneName, onProgress, mode));
         }
 
-        private static IEnumerator LoadSceneRoutine(string sceneName, Action<float> onProgress, Action onCompleted, LoadSceneMode mode)
+        private static IEnumerator LoadSceneRoutine(string sceneName, Action<float> onProgress, LoadSceneMode mode)
         {
             AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, mode);
+
             if (operation == null)
             {
                 Debug.LogError($"Scene {sceneName} not found!");
+                _isLoading = false;
                 yield break;
             }
 
-            while (!operation.isDone)
+            operation.allowSceneActivation = false;
+
+            while (operation.progress < 0.9f)
             {
                 onProgress?.Invoke(operation.progress);
                 yield return null;
             }
-
             onProgress?.Invoke(1f);
-            onCompleted?.Invoke();
+            _isLoading = false;
+            operation.allowSceneActivation = true;
         }
     }
 }
