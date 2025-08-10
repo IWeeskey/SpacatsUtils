@@ -13,6 +13,7 @@ namespace Spacats.Utils
     [Serializable]
     public class Controller : MonoBehaviour
     {
+        [Header("Controller settings")]
         public string UniqueTag = "";
         protected bool _applicationIsQuitting = false;
         protected bool _registered = false;
@@ -137,6 +138,5 @@ namespace Spacats.Utils
             Transform hubTransform = ControllersHub.Instance.transform;
             if (transform.parent != hubTransform) transform.parent = hubTransform;
         }
-
     }
 }

@@ -15,9 +15,6 @@ namespace Spacats.Utils
     public class ControllersHub : Singleton<ControllersHub>
     {
         [SerializeField] private List<Controller> _controllers = new List<Controller>();
-
-
-
         private void RefreshName()
         {
             gameObject.name = "[SpaCats] ControllersHub";

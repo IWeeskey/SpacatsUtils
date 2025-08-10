@@ -33,10 +33,7 @@ namespace Spacats.Utils
 
         private void DrawSettingsTab()
         {
-            ControllersHub targetScript = (ControllersHub)target;
-
             TryDrawSingletonParameters();
-
             serializedObject.ApplyModifiedProperties();
         }
 
