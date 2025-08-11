@@ -26,6 +26,7 @@ namespace Spacats.Utils
 
         protected override void OnButtonClick(int index)
         {
+            CheckController();
             switch (index)
             {
                 default: base.OnButtonClick(index); break;

@@ -48,12 +48,12 @@ namespace Spacats.Utils
             }
         }
 
-        public static double Finish(string tag, bool showLogs = true)
+        public static (double,string) Finish(string tag, bool showLogs = true)
         {
             if (!_activeTimers.TryGetValue(tag, out var data))
             {
                 UnityEngine.Debug.LogWarning($"[TimeTracker] No timer with tag '{tag}' found.");
-                return 0f;
+                return (0f,"0");
             }
 
             data.Stopwatch.Stop();
@@ -66,7 +66,7 @@ namespace Spacats.Utils
             if (showLogs) UnityEngine.Debug.Log(result);
 
             _activeTimers.Remove(tag);
-            return ms;
+            return (ms, result);
         }
 
         private static void ClearAll()

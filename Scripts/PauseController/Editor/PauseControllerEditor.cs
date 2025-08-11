@@ -13,7 +13,7 @@ namespace Spacats.Utils
         {
             PauseController targetScript = (PauseController)target;
 
-            GUILayout.TextArea("Paused: " + targetScript.IsPaused);
+            GUILayout.TextArea("Paused: " + PauseController.IsPaused);
 
             if (GUILayout.Button("Switch Pause"))
             {

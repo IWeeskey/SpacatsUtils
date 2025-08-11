@@ -6,7 +6,7 @@ namespace Spacats.Utils
     {
         [Header("Log Window Settings")]
         [Range(0f, 1f)]
-        [SerializeField] private float _topPercent = 0.1f;
+        [SerializeField] private float _topPercent = 0.0f;
 
         [Range(0f, 1f)]
         [SerializeField] private float _bottomPercent = 0.1f;
@@ -16,7 +16,7 @@ namespace Spacats.Utils
 
         [Header("Functionality")]
         public bool LoggingEnabled = true;
-        [SerializeField] private bool _isLogOpen = true;
+        [SerializeField] private bool _isLogOpen = false;
         public bool IsOpened => _isLogOpen;
         public void OpenLog() => _isLogOpen = true;
         public void CloseLog() => _isLogOpen = false;

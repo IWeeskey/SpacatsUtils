@@ -57,10 +57,22 @@ namespace Spacats.Utils
             SceneManagerHelper.MarkActiveSceneDirty();
             if (!ExecuteInEditor && !Application.isPlaying) return;
             ControllerAwake();
+            TryRegister();
         }
 
         private void OnEnable()
         {
+            TryRegister();
+            RefreshName(); 
+            CheckHierarchy();
+
+            if (!ExecuteInEditor && !Application.isPlaying) return;
+            ControllerOnEnable();
+        }
+        private void TryRegister()
+        {
+            if (_registered) return;
+
             bool registerResult = ControllersHub.Instance.RegisterController(this);
             if (!registerResult)
             {
@@ -78,12 +90,6 @@ namespace Spacats.Utils
             }
 
             _registered = true;
-
-            RefreshName(); 
-            CheckHierarchy();
-
-            if (!ExecuteInEditor && !Application.isPlaying) return;
-            ControllerOnEnable();
         }
 
         private void OnDisable()
@@ -137,6 +143,9 @@ namespace Spacats.Utils
         {
             Transform hubTransform = ControllersHub.Instance.transform;
             if (transform.parent != hubTransform) transform.parent = hubTransform;
+            transform.position = Vector3.zero;
+            transform.localScale = Vector3.one;
+            transform.eulerAngles = Vector3.zero;
         }
     }
 }

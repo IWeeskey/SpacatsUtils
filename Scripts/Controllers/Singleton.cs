@@ -152,6 +152,9 @@ namespace Spacats.Utils
             if (!AlwaysOnTop) return;
             if (transform.parent != null) transform.parent = null;
             transform.SetAsFirstSibling();
+            transform.position = Vector3.zero;
+            transform.localScale = Vector3.one;
+            transform.eulerAngles = Vector3.zero;
         }
 
 

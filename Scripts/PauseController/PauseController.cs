@@ -5,8 +5,8 @@ namespace Spacats.Utils
 {
     public class PauseController : Controller
     {
-        private bool _paused = false;
-        public bool IsPaused => _paused;
+        private static bool _paused = false;
+        public static bool IsPaused => _paused;
 
         public delegate void PauseSwitched(bool _newState);
         public static event PauseSwitched OnPauseSwitched;
