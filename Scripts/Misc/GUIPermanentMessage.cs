@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Spacats.Utils
 {
+    [DefaultExecutionOrder(-10)]
     public class GUIPermanentMessage : Controller
     {
         [Header("Display Settings")]

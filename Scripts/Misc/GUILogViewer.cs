@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Spacats.Utils
 {
+    [DefaultExecutionOrder(-10)]
     public class GUILogViewer : Controller
     {
         [Header("Log Window Settings")]

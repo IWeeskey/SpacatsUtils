@@ -4,12 +4,15 @@ namespace Spacats.Utils
 {
     public class TrailPause : MonoBehaviour
     {
+        [Range(0.001f, 0.2f)]
+        public float TimeRecoverySpeed = 0.02f;
         private TrailRenderer _selfTrail;
         private float _pauseTime;
         private float _resumeTime;
         private float _trailTime = 1.0f;
         private float _beforeFinish;
         private bool _eventSubscribed;
+        private bool _paused = false;
 
         private void Awake()
         {
@@ -18,38 +21,39 @@ namespace Spacats.Utils
             SubscribeEvents();
         }
 
-        public void OnDestroy()
+        private void OnDestroy()
         {
             UnSubscribeEvents();
         }
 
-        public void OnEnable()
+        private void OnEnable()
         {
             SubscribeEvents();
         }
 
-        public void OnDisable()
+        private void OnDisable()
         {
             UnSubscribeEvents();
         }
 
 
-        void SubscribeEvents()
+        private void SubscribeEvents()
         {
             if (_eventSubscribed) return;
             PauseController.OnPauseSwitched += PauseSwitched;
             _eventSubscribed = true;
         }
 
-        void UnSubscribeEvents()
+        private void UnSubscribeEvents()
         {
             if (!_eventSubscribed) return;
             PauseController.OnPauseSwitched -= PauseSwitched;
             _eventSubscribed = false;
         }
 
-        void PauseSwitched(bool value)
+        private void PauseSwitched(bool value)
         {
+            _paused = value;
             if (value)
             {
                 _pauseTime = Time.time;
@@ -60,6 +64,12 @@ namespace Spacats.Utils
                 _resumeTime = Time.time;
                 _selfTrail.time = (_resumeTime - _pauseTime) + _trailTime;
             }
+        }
+
+        private void Update()
+        {
+            if (_paused) return;
+            if (_selfTrail.time > _trailTime) _selfTrail.time -= (_selfTrail.time - _trailTime) * TimeRecoverySpeed;
         }
 
         public void FinishTrail()

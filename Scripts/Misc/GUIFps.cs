@@ -1,6 +1,7 @@
 using UnityEngine;
 namespace Spacats.Utils
 {
+    [DefaultExecutionOrder(-10)]
     public class GUIFps : Controller
     {
         [Header("Display Settings")]

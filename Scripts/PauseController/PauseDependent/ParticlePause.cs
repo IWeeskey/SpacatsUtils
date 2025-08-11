@@ -13,37 +13,37 @@ namespace Spacats.Utils
             SubscribeEvents();
         }
 
-        public void OnDestroy()
+        private void OnDestroy()
         {
             UnSubscribeEvents();
         }
 
-        public void OnEnable()
+        private void OnEnable()
         {
             SubscribeEvents();
         }
 
-        public void OnDisable()
+        private void OnDisable()
         {
             UnSubscribeEvents();
         }
 
 
-        void SubscribeEvents()
+        private void SubscribeEvents()
         {
             if (_eventSubscribed) return;
             PauseController.OnPauseSwitched += PauseSwitched;
             _eventSubscribed = true;
         }
 
-        void UnSubscribeEvents()
+        private void UnSubscribeEvents()
         {
             if (!_eventSubscribed) return;
             PauseController.OnPauseSwitched -= PauseSwitched;
             _eventSubscribed = false;
         }
 
-        void PauseSwitched(bool value)
+        private void PauseSwitched(bool value)
         {
             if (_selfParticleSystem == null) return;
 

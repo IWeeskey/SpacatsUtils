@@ -18,10 +18,6 @@ namespace Spacats.Utils
         private void Awake()
         {
             Application.targetFrameRate = 60;
-        }
-
-        private void Start()
-        {
             CheckController();
         }
 

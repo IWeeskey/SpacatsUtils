@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Spacats.Utils
 {
+    [DefaultExecutionOrder(-10)]
     public class MonoTweenController : Controller
     {
         public bool IsPaused { get; set; }
@@ -37,7 +38,10 @@ namespace Spacats.Utils
                 tween.Update(Time.deltaTime, IsPaused);
 
                 if (tween.IsComplete)
+                {
                     _tweens.RemoveAt(i);
+                    tween.OnEnd?.Invoke();
+                }
             }
 
             if (PerformMeasurements)
@@ -63,13 +67,23 @@ namespace Spacats.Utils
             unit.Stop();
         }
 
-        public void StartChain(params MonoTweenUnit[] tweens)
+        public void StartChain(int repeatCount, params MonoTweenUnit[] tweens)
         {
             if (tweens.Length == 0) return;
 
+            int currentRepeat = 0;
+
             void AddChain(int index)
             {
-                if (index >= tweens.Length) return;
+                if (index >= tweens.Length)
+                {
+                    if (repeatCount < 0 || currentRepeat < repeatCount)
+                    {
+                        currentRepeat++;
+                        AddChain(0);
+                    }
+                    return;
+                }
 
                 var current = tweens[index];
                 var originalOnEnd = current.OnEnd;
@@ -94,5 +108,6 @@ namespace Spacats.Utils
 
             AddChain(0);
         }
+
     }
 }

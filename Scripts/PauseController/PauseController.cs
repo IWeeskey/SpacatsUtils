@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Spacats.Utils
 {
+    [DefaultExecutionOrder(-10)]
     public class PauseController : Controller
     {
         private static bool _paused = false;

@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-
 using UnityEngine;
 using System.Linq;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -11,7 +9,7 @@ using UnityEditor;
 namespace Spacats.Utils
 {
     [ExecuteInEditMode]
-    [DefaultExecutionOrder(-10)]
+    [DefaultExecutionOrder(-20)]
     public class ControllersHub : Singleton<ControllersHub>
     {
         [SerializeField] private List<Controller> _controllers = new List<Controller>();
