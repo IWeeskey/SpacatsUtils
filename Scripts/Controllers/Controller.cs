@@ -32,6 +32,7 @@ namespace Spacats.Utils
         protected virtual void ControllerOnDisable() { TryToShowLog("OnDisable", 0, true); }
         protected virtual void ControllerOnDestroy() { TryToShowLog("OnDestroy", 0, true); }
         protected virtual void ControllerOnApplicationQuit() { TryToShowLog("OnApplicationQuit", 0, true); }
+        public virtual void ControllerOnSceneUnloading(Scene scene) { TryToShowLog("OnSceneUnloading", 0, true); }
 
         /// <summary>
         /// Same as basic unity Update()

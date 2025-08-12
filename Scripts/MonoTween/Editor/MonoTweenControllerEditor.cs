@@ -54,8 +54,6 @@ namespace Spacats.Utils
             EditorGUILayout.LabelField("Measurements", EditorStyles.boldLabel);
             EditorGUILayout.LabelField("Update time: " + targetScript.UpdateTimeString, EditorStyles.label);
             EditorGUILayout.LabelField("Update ms: " + targetScript.UpdateTimeMS, EditorStyles.label);
-
-
         }
     }
 }

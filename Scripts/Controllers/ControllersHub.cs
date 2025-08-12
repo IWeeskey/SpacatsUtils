@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -55,6 +56,20 @@ namespace Spacats.Utils
         protected override void SingletonOnApplicationQuit()
         {
             base.SingletonOnApplicationQuit();
+        }
+
+        protected override void OnSceneUnloading(Scene scene)
+        {
+            base.OnSceneUnloading(scene);
+            foreach (Controller controller in _controllers)
+            {
+                if (controller == null) continue;
+                if (!controller.ExecuteInEditor && !Application.isPlaying)
+                {
+                    continue;
+                }
+                controller.ControllerOnSceneUnloading(scene);
+            }
         }
 
         protected override void SingletonUpdate()

@@ -43,7 +43,7 @@ namespace Spacats.Utils
         protected virtual void SingletonOnDestroy() { TryToShowLog("OnDestroy", 0, true); }
         protected virtual void SingletonOnApplicationQuit() {  TryToShowLog("OnApplicationQuit", 0, true);}
         protected virtual void SingletonSetDefaultParameters() { TryToShowLog("SetDefaultParameters", 0, true); }
-
+        protected virtual void OnSceneUnloading(Scene scene) { TryToShowLog("OnSceneUnloading", 0, true); }
 
         /// <summary>
         /// Same as basic unity Update()
@@ -101,6 +101,7 @@ namespace Spacats.Utils
         {
             if (!IsInstance) return;
             SingletonOnEnable();
+            SceneManager.sceneUnloaded += HandleSceneUnloaded;
 #if UNITY_EDITOR
             SceneView.duringSceneGui += DuringSceneGui;
 #endif
@@ -110,6 +111,7 @@ namespace Spacats.Utils
         {
             if (!IsInstance) return;
             SingletonOnDisable();
+            SceneManager.sceneUnloaded -= HandleSceneUnloaded;
 #if UNITY_EDITOR
             SceneView.duringSceneGui -= DuringSceneGui;
 #endif
@@ -122,6 +124,11 @@ namespace Spacats.Utils
             SingletonSharedUpdate();
         }
 #endif
+
+        private void HandleSceneUnloaded(Scene scene)
+        {
+            OnSceneUnloading(scene);
+        }
 
         private void Update()
         {

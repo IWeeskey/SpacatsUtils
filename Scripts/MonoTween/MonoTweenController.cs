@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 namespace Spacats.Utils
 {
     [DefaultExecutionOrder(-10)]
@@ -16,6 +18,17 @@ namespace Spacats.Utils
 
         public double UpdateTimeMS => _updateTimeMS;
         public string UpdateTimeString => _updateTimeString;
+
+        public override void ControllerOnSceneUnloading(Scene scene)
+        {
+            base.ControllerOnSceneUnloading(scene);
+            BreakAll();
+        }
+
+        public void BreakAll()
+        {
+            _tweens.Clear();
+        }
 
         public override void ControllerSharedUpdate()
         {

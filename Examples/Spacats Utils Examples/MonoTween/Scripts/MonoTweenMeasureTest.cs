@@ -68,6 +68,7 @@ namespace Spacats.Utils
                     if (!_cLogViewer.LoggingEnabled) return "Logging Disabled";
                     return _cLogViewer.IsOpened ? "Hide Log" : "Show Log";
                 case 1: return "Start \n tweens ("+ TweensCount + ")";
+                case 2: return "Load scene";
             } 
         }
 
@@ -79,6 +80,7 @@ namespace Spacats.Utils
                 default: base.OnButtonClick(index); break;
                 case 0: SwitchShowHideLog(); break;
                 case 1: StartTweens(); break;
+                case 2: SceneManagerHelper.LoadScene("MonoTweenExamples"); break;
             }
         }
 
