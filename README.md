@@ -1,4 +1,4 @@
-![Screenshot](Arts/SpaCats Logo.png)
+![Screenshot](Arts/SpaCats%20Logo.png)
 
 Spacats Utils is a lightweight collection of essential utilities and helper tools used across various Spacats projects.
 
