@@ -40,7 +40,8 @@ namespace Spacats.Utils
             MonoTweenController targetScript = (MonoTweenController)target;
 
             GUILayout.TextArea("Paused: " + targetScript.IsPaused);
-            GUILayout.TextArea("Tweens Count: " + targetScript.TweensCount);
+            GUILayout.TextArea("Active Tweens: " + targetScript.ActiveTweensCount);
+            GUILayout.TextArea("Tweens pool: " + targetScript.TweensListCount);
 
             SerializedProperty performMeasurements = serializedObject.FindProperty("PerformMeasurements");
             EditorGUILayout.PropertyField(performMeasurements);

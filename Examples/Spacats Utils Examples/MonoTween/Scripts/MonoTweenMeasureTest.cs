@@ -48,7 +48,7 @@ namespace Spacats.Utils
         private void Update()
         {
             if (_cPermMessage == null) return;
-            _cPermMessage.Message = "Count: " + _cMonoTween.TweensCount + "; ms: " + _cMonoTween.UpdateTimeMS.ToString();
+            _cPermMessage.Message = "Count: " + _cMonoTween.ActiveTweensCount + "; ms: " + _cMonoTween.UpdateTimeMS.ToString();
         }
 
         private void CheckController()

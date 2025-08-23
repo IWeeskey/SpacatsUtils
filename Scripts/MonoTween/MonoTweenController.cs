@@ -8,13 +8,14 @@ namespace Spacats.Utils
     public class MonoTweenController : Controller
     {
         public bool IsPaused { get; set; }
+        public int ActiveTweensCount => _activeCount;
+        public int TweensListCount => _tweens.Count;
+        public bool PerformMeasurements = false;
 
         private List<MonoTweenUnit> _tweens = new();
-        public int TweensCount => _tweens.Count;
-
-        public bool PerformMeasurements = false;
         private double _updateTimeMS = 0;
         private string _updateTimeString = "";
+        private int _activeCount = 0;
 
         public double UpdateTimeMS => _updateTimeMS;
         public string UpdateTimeString => _updateTimeString;
@@ -28,6 +29,7 @@ namespace Spacats.Utils
         public void BreakAll()
         {
             _tweens.Clear();
+            _activeCount = 0;
         }
 
         public override void ControllerSharedUpdate()
@@ -45,14 +47,21 @@ namespace Spacats.Utils
                 TimeTracker.Start("MonoTweenController");
             }
 
-            for (int i = _tweens.Count - 1; i >= 0; i--)
+            for (int i = _activeCount - 1; i >= 0; i--)
             {
                 var tween = _tweens[i];
                 tween.Update(Time.deltaTime, IsPaused);
 
                 if (tween.IsComplete)
                 {
-                    _tweens.RemoveAt(i);
+                    int lastIndex = _activeCount - 1;
+                    if (i != lastIndex)
+                    {
+                        _tweens[i] = _tweens[lastIndex];
+                    }
+                    _tweens[lastIndex] = null;
+                    _activeCount--;
+
                     tween.OnEnd?.Invoke();
                 }
             }
@@ -67,7 +76,16 @@ namespace Spacats.Utils
 
         private void Add(MonoTweenUnit tween)
         {
-            _tweens.Add(tween);
+            if (_activeCount < _tweens.Count)
+            {
+                _tweens[_activeCount] = tween;
+            }
+            else
+            {
+                _tweens.Add(tween);
+            }
+
+            _activeCount++;
         }
 
         public void StartSingle(MonoTweenUnit unit)
