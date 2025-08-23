@@ -1,4 +1,4 @@
-![Screenshot](Arts/SpaCats%20Logo.png)
+![Screenshot](Arts/SpaCats%20LogoSmall.png)
 
 Spacats Utils is a lightweight collection of essential utilities and helper tools used across various Spacats projects.
 
@@ -8,10 +8,10 @@ Main features:
 
 MonoTween Controller tests:
 1) Device: Android TechnoSpark 8C (Android 11)
-- Spawning 1k tweens instantly takes about 4–7ms — that’s ~150+ FPS
-- Running 1k tweens at the same time costs 0.4ms — that’s ~2500 FPS
-- Realistically, you can run around 5k tweens at once without losing a single frame (on mobile, it’s locked to 60 FPS anyway)
-2) On PC… testing feels pointless — you can push around 40k tweens at the same time with no loss, but honestly, you’ll probably never need that many unless you’re summoning the Tweenpocalypse.
+- Spawning 1k tweens instantly takes about 1.4–7ms
+- Running 1k tweens at the same time costs 0.4ms
+- At around 40k tweens there is no any single frame loss
+2) On PC… testing feels pointless — you can push around 50k tweens at the same time with no loss, but honestly, you’ll probably never need that many unless you’re summoning the Tweenpocalypse.
 
 INSTALLATION
 1) Open Unity and go to the top menu:
