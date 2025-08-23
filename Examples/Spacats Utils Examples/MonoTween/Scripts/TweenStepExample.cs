@@ -35,7 +35,7 @@ namespace Spacats.Utils
                        delay: 0f,
                        duration: TweenDuration,
                        onStart: () => { ResetPosition(); },
-                       lerpAction: (float lerp) => { LerpAnimatonTarget(LocalPositions[0], LocalPositions[1], lerp); },
+                       onLerp: (float lerp) => { LerpAnimatonTarget(LocalPositions[0], LocalPositions[1], lerp); },
                        onEnd: () => { StartLoop(); },
                        true,
                        0,

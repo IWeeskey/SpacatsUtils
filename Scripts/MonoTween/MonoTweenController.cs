@@ -7,16 +7,15 @@ namespace Spacats.Utils
     [DefaultExecutionOrder(-10)]
     public class MonoTweenController : Controller
     {
-        public bool IsPaused { get; set; }
-        public int ActiveTweensCount => _activeCount;
-        public int TweensListCount => _tweens.Count;
-        public bool PerformMeasurements = false;
-
         private List<MonoTweenUnit> _tweens = new();
         private double _updateTimeMS = 0;
         private string _updateTimeString = "";
         private int _activeCount = 0;
 
+        public bool IsPaused { get; set; }
+        public int ActiveTweensCount => _activeCount;
+        public int TweensListCount => _tweens.Count;
+        public bool PerformMeasurements = false;
         public double UpdateTimeMS => _updateTimeMS;
         public string UpdateTimeString => _updateTimeString;
 
@@ -24,18 +23,6 @@ namespace Spacats.Utils
         {
             base.ControllerOnSceneUnloading(scene);
             BreakAll();
-        }
-
-        public void BreakAll()
-        {
-            _tweens.Clear();
-            _activeCount = 0;
-        }
-
-        public override void ControllerSharedUpdate()
-        {
-            base.ControllerSharedUpdate();
-            UpdateLogic();
         }
 
         private void UpdateLogic()
@@ -88,6 +75,18 @@ namespace Spacats.Utils
             _activeCount++;
         }
 
+        public void BreakAll()
+        {
+            _tweens.Clear();
+            _activeCount = 0;
+        }
+
+        public override void ControllerSharedUpdate()
+        {
+            base.ControllerSharedUpdate();
+            UpdateLogic();
+        }
+
         public void StartSingle(MonoTweenUnit unit)
         {
             Add(unit);
@@ -123,20 +122,19 @@ namespace Spacats.Utils
                     current.Delay,
                     current.Duration,
                     current.OnStart,
-                    current.LerpAction,
+                    current.OnLerp,
                     () =>
                     {
                         originalOnEnd?.Invoke();
                         AddChain(index + 1);
                     },
-                    current.ApplyPause,
+                    current.ApplyGlobalPause,
                     current.RepeatCount,
                     current.StepsCount
                 );
 
                 Add(current);
             }
-
             AddChain(0);
         }
 

@@ -5,43 +5,45 @@ namespace Spacats.Utils
     [Serializable]
     public class MonoTweenUnit
     {
-        public string UnitID = "";
-        public float Delay { get; set; }
-        public float Duration { get; set; }
-        public Action OnStart { get; set; }
-        public Action<float> LerpAction { get; set; }
-        public Action OnEnd { get; set; }
-        public bool ApplyPause { get; set; }
-        public int RepeatCount { get; set; }
-        public int StepsCount { get; set; }
+        private bool _isStopped;
+        private bool _selfPaused;
+        private bool _started;
 
         [SerializeField] private float _time;
         private float _delayTimer;
-        private int _currentRepeat;
-        private bool _started;
-        private int _lastStepIndex = -1;
-
-        public bool IsComplete { get; private set; }
-        private bool _isStopped;
         private float _stepDuration;
         private float _nextStepTime;
+
+        private int _currentRepeat;
+        private int _lastStepIndex = -1;
+
+        public bool ApplyGlobalPause { get; set; }
+        public bool IsComplete { get; private set; }
+        public float Delay { get; set; }
+        public float Duration { get; set; }
+        public int RepeatCount { get; set; }
+        public int StepsCount { get; set; }
+        public string UnitID = "";
+        public Action OnStart { get; set; }
+        public Action<float> OnLerp { get; set; }
+        public Action OnEnd { get; set; }
 
         public MonoTweenUnit(
             float delay,
             float duration,
             Action onStart,
-            Action<float> lerpAction,
+            Action<float> onLerp,
             Action onEnd,
-            bool applyPause = true,
+            bool applyGlobalPause = true,
             int repeatCount = 0,
             int stepsCount = 0)
         {
             Delay = Mathf.Max(0f, delay);
             Duration = Mathf.Max(0.0001f, duration);
             OnStart = onStart;
-            LerpAction = lerpAction;
+            OnLerp = onLerp;
             OnEnd = onEnd;
-            ApplyPause = applyPause;
+            ApplyGlobalPause = applyGlobalPause;
             RepeatCount = Mathf.Max(0, repeatCount);
             StepsCount = Mathf.Max(0, stepsCount);
         }
@@ -51,6 +53,7 @@ namespace Spacats.Utils
             IsComplete = false;
             _isStopped = false;
             _started = false;
+            _selfPaused = false;
             _delayTimer = 0f;
             _currentRepeat = 0;
             _time = 0f;
@@ -63,7 +66,17 @@ namespace Spacats.Utils
             _isStopped = true;
         }
 
-        public void Update(float deltaTime, bool isPaused)
+        public void SelfPauseON()
+        {
+            _selfPaused = true;
+        }
+
+        public void SelfPauseOFF()
+        {
+            _selfPaused = false;
+        }
+
+        public void Update(float deltaTime, bool isGlobalPaused)
         {
             if (IsComplete || _isStopped)
             {
@@ -71,27 +84,27 @@ namespace Spacats.Utils
                 return;
             }
 
-            if (ApplyPause && isPaused)
-                return;
+            if (ApplyGlobalPause && isGlobalPaused) return;
+
+            if (_selfPaused) return;
 
             if (!_started)
             {
                 _delayTimer += deltaTime;
-                if (_delayTimer >= Delay)
+
+                if (_delayTimer < Delay) return;
+
+                _started = true;
+                _time = 0f;
+                _lastStepIndex = -1;
+
+                if (StepsCount > 0)
                 {
-                    _started = true;
-                    _time = 0f;
-                    _lastStepIndex = -1;
-
-                    if (StepsCount > 0)
-                    {
-                        _stepDuration = Duration / StepsCount;
-                        _nextStepTime = 0f;
-                    }
-
-                    OnStart?.Invoke();
+                    _stepDuration = Duration / StepsCount;
+                    _nextStepTime = 0f;
                 }
-                else return;
+
+                OnStart?.Invoke();
             }
 
             _time += deltaTime;
@@ -103,31 +116,30 @@ namespace Spacats.Utils
                 {
                     _lastStepIndex++;
                     float stepProgress = Mathf.Clamp01((float)_lastStepIndex / StepsCount);
-                    LerpAction?.Invoke(stepProgress);
+                    OnLerp?.Invoke(stepProgress);
                     _nextStepTime += _stepDuration;
                 }
             }
             else
             {
-                LerpAction?.Invoke(t);
+                OnLerp?.Invoke(t);
             }
 
-            if (t >= 1f)
+            if (t < 1f) return;
+
+            if (_currentRepeat < RepeatCount)
             {
-                if (_currentRepeat < RepeatCount)
+                _currentRepeat++;
+                _time = 0f;
+                _lastStepIndex = -1;
+                if (StepsCount > 0)
                 {
-                    _currentRepeat++;
-                    _time = 0f;
-                    _lastStepIndex = -1;
-                    if (StepsCount > 0)
-                    {
-                        _nextStepTime = 0f;
-                    }
+                    _nextStepTime = 0f;
                 }
-                else
-                {
-                    IsComplete = true;
-                }
+            }
+            else
+            {
+                IsComplete = true;
             }
         }
     }

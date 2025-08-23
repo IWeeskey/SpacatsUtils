@@ -35,7 +35,7 @@ namespace Spacats.Utils
                     delay: 0f,
                     duration: randomDuration,
                     onStart: LogStartEndTweens ? () => Debug.Log($"Tween {id} start") : null,
-                    lerpAction: LogProgressTweens ? (t => Debug.Log($"Tween {id} progress {t:F2}")) : null,
+                    onLerp: LogProgressTweens ? (t => Debug.Log($"Tween {id} progress {t:F2}")) : null,
                     onEnd: LogStartEndTweens ? () => Debug.Log($"Tween {id} end") : null
                 );
 
