@@ -14,11 +14,6 @@ namespace Spacats.Utils
     public class ControllersHub : Singleton<ControllersHub>
     {
         [SerializeField] private List<Controller> _controllers = new List<Controller>();
-        private void RefreshName()
-        {
-            gameObject.name = "[SpaCats] ControllersHub";
-        }
-
         #region overrides
         protected override void SingletonAwake()
         {
@@ -139,6 +134,11 @@ namespace Spacats.Utils
                 controller.transform.parent = null;
                 controller.enabled = true;
             }
+        }
+
+        private void RefreshName()
+        {
+            gameObject.name = "[SpaCats] ControllersHub";
         }
 
         private void Clear()

@@ -137,7 +137,7 @@ namespace Spacats.Utils
 
         private void RefreshName()
         {
-            gameObject.name = "[SpaCats] " + GetType().Name;
+            gameObject.name = "[SpaCats] " + GetType().Name + " " + UniqueTag;
         }
 
         protected virtual void CheckHierarchy()

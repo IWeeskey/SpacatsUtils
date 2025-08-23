@@ -1,6 +1,6 @@
 {
   "name": "com.spacats.utils",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "displayName": "Spacats Utils",
   "description": "Spacats Utils is a lightweight collection of essential utilities and helper tools used across various Spacats projects. Includes core extensions, math helpers, and reusable components for faster and cleaner development in Unity.",
   "unity": "2019.1",
