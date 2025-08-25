@@ -67,6 +67,19 @@ namespace Spacats.Utils
             }
         }
 
+        protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            base.OnSceneLoaded(scene, mode);
+            if (_controllers.Count == 0) return;
+
+            for (int i = _controllers.Count - 1; i>=0; i--)
+            {
+                if (_controllers[i] == null) continue;
+                if (!_controllers[i].ExecuteInEditor && !Application.isPlaying) continue;
+                _controllers[i].ExternalOnSceneLoaded(scene, mode);
+            }
+        }
+
         protected override void SingletonUpdate()
         {
             base.SingletonUpdate();
@@ -169,7 +182,7 @@ namespace Spacats.Utils
         private bool IsUnique(Controller controller)
         {
             var targetType = controller.GetType();
-            var group = _controllers .Where(c => c.GetType() == targetType).ToList();
+            var group = _controllers.Where(c => c.GetType() == targetType).ToList();
 
             TryToShowLog($"Controller: {targetType.Name}, count: {group.Count}", 1);
 

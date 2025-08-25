@@ -1,0 +1,47 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+namespace Spacats.Utils
+{
+
+    public class SceneLoadingButtons : GUIButtons
+    {
+        private GUIPermanentMessage _cPermMessage;
+        private SceneController _cScene;
+        public string SceneToLoad = "";
+
+        private void Awake()
+        {
+            CheckController();
+            _cPermMessage.Message = SceneManager.GetActiveScene().name;
+        }
+
+        private void CheckController()
+        {
+            if (_cPermMessage == null) _cPermMessage = ControllersHub.Instance.GetController<GUIPermanentMessage>();
+            if (_cScene == null) _cScene = ControllersHub.Instance.GetController<SceneController>();
+        }
+
+        protected override string GetButtonLabel(int index)
+        {
+            CheckController();
+            switch (index)
+            {
+                default: return base.GetButtonLabel(index);
+                case 0: return "Load immediate";
+                case 1: return "Load async";
+            }
+        }
+
+        protected override void OnButtonClick(int index)
+        {
+            CheckController();
+            switch (index)
+            {
+                default: base.OnButtonClick(index); break;
+                case 0: _cScene.LoadSceneImmediate(SceneToLoad); break;
+                case 1: _cScene.LoadSceneAsync(SceneToLoad); break;
+            }
+        }
+    }
+}

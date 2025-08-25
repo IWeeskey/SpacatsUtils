@@ -80,7 +80,7 @@ namespace Spacats.Utils
                 default: base.OnButtonClick(index); break;
                 case 0: SwitchShowHideLog(); break;
                 case 1: StartTweens(); break;
-                case 2: SceneManagerHelper.LoadScene("MonoTweenExamples"); break;
+                case 2: SceneLoaderHelper.LoadScene("MonoTweenExamples"); break;
             }
         }
 

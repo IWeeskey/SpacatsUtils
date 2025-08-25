@@ -8,7 +8,7 @@ using UnityEditor;
 #endif
 namespace Spacats.Utils
 {
-    public static class SceneManagerHelper
+    public static class SceneLoaderHelper
     {
         private static bool _isLoading = false;
         public static bool IsLoading => _isLoading;

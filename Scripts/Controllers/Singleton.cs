@@ -44,7 +44,7 @@ namespace Spacats.Utils
         protected virtual void SingletonOnApplicationQuit() {  TryToShowLog("OnApplicationQuit", 0, true);}
         protected virtual void SingletonSetDefaultParameters() { TryToShowLog("SetDefaultParameters", 0, true); }
         protected virtual void OnSceneUnloading(Scene scene) { TryToShowLog("OnSceneUnloading", 0, true); }
-
+        protected virtual void OnSceneLoaded(Scene scene, LoadSceneMode mode) { TryToShowLog("OnSceneLoaded", 0, true); }
         /// <summary>
         /// Same as basic unity Update()
         /// </summary>
@@ -81,7 +81,7 @@ namespace Spacats.Utils
                 _applicationIsQuitting = false;
                 if (Application.isPlaying) DontDestroyOnLoad(gameObject);
                 SingletonAwake();
-                SceneManagerHelper.MarkActiveSceneDirty();
+                SceneLoaderHelper.MarkActiveSceneDirty();
                 return;
             }
             if (IsInstance) return;
@@ -102,6 +102,7 @@ namespace Spacats.Utils
             if (!IsInstance) return;
             SingletonOnEnable();
             SceneManager.sceneUnloaded += HandleSceneUnloaded;
+            SceneManager.sceneLoaded += HandleSceneLoaded;
 #if UNITY_EDITOR
             SceneView.duringSceneGui += DuringSceneGui;
 #endif
@@ -112,6 +113,7 @@ namespace Spacats.Utils
             if (!IsInstance) return;
             SingletonOnDisable();
             SceneManager.sceneUnloaded -= HandleSceneUnloaded;
+            SceneManager.sceneLoaded -= HandleSceneLoaded;
 #if UNITY_EDITOR
             SceneView.duringSceneGui -= DuringSceneGui;
 #endif
@@ -128,6 +130,11 @@ namespace Spacats.Utils
         private void HandleSceneUnloaded(Scene scene)
         {
             OnSceneUnloading(scene);
+        }
+
+        private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            OnSceneLoaded(scene, mode);
         }
 
         private void Update()

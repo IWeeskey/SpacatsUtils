@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -15,8 +16,6 @@ namespace Spacats.Utils
     {
         [Header("Controller settings")]
         public string UniqueTag = "";
-        protected bool _applicationIsQuitting = false;
-        protected bool _registered = false;
 
         [Tooltip("Should it be executed while in editor")]
         public bool ExecuteInEditor = false;
@@ -27,12 +26,19 @@ namespace Spacats.Utils
         [Tooltip("Show controller logs for testing purposes, such as 'Awake', 'OnEnable' etc.")]
         public bool ShowControllerLogs = false;
 
+        [Tooltip("If the list is empty, this controller will persist across all scenes. " +
+            "Otherwise, it will automatically be destroyed when loading a scene whose name is not in the list.")]
+        public List<string> PersistsAtScenes = new List<string>();
+
+        protected bool _applicationIsQuitting = false;
+        protected bool _registered = false;
         protected virtual void ControllerAwake() { TryToShowLog("Awake", 0, true); }
         protected virtual void ControllerOnEnable() { TryToShowLog("OnEnable", 0, true); }
         protected virtual void ControllerOnDisable() { TryToShowLog("OnDisable", 0, true); }
         protected virtual void ControllerOnDestroy() { TryToShowLog("OnDestroy", 0, true); }
         protected virtual void ControllerOnApplicationQuit() { TryToShowLog("OnApplicationQuit", 0, true); }
-        public virtual void ControllerOnSceneUnloading(Scene scene) { TryToShowLog("OnSceneUnloading", 0, true); }
+        public virtual void ControllerOnSceneUnloading(Scene scene) { TryToShowLog("OnSceneUnloading " + scene.name, 0, true); }
+        public virtual void ControllerOnSceneLoaded(Scene scene, LoadSceneMode mode) { TryToShowLog("OnSceneLoaded " + scene.name, 0, true); }
 
         /// <summary>
         /// Same as basic unity Update()
@@ -55,7 +61,7 @@ namespace Spacats.Utils
         {
             RefreshName(); 
             CheckHierarchy();
-            SceneManagerHelper.MarkActiveSceneDirty();
+            SceneLoaderHelper.MarkActiveSceneDirty();
             if (!ExecuteInEditor && !Application.isPlaying) return;
             ControllerAwake();
             TryRegister();
@@ -79,14 +85,7 @@ namespace Spacats.Utils
             {
                 TryToShowLog("Already registered!", 1, true);
 
-                if (!Application.isPlaying)
-                {
-                    DestroyImmediate(gameObject);
-                }
-                else
-                {
-                    Destroy(gameObject);
-                }
+                DestroyController();
                 return;
             }
 
@@ -148,5 +147,43 @@ namespace Spacats.Utils
             transform.localScale = Vector3.one;
             transform.eulerAngles = Vector3.zero;
         }
+
+        public void ExternalOnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (PersistsAtScenes.Count == 0)
+            {
+                ControllerOnSceneLoaded(scene, mode);
+                return;
+            }
+
+
+            string loadedSceneName = scene.name;
+            bool found = false;
+
+            foreach (string sName in PersistsAtScenes)
+            {
+                if (string.Equals(sName, loadedSceneName))
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) ControllerOnSceneLoaded(scene, mode);
+            else DestroyController();
+        }
+
+        public void DestroyController()
+        {
+            if (!Application.isPlaying)
+            {
+                DestroyImmediate(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+
     }
 }
