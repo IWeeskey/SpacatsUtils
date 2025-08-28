@@ -4,7 +4,6 @@ using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
 using UnityEditor;
-using UnityEditor.SceneManagement;
 #endif
 
 namespace Spacats.Utils
@@ -15,26 +14,6 @@ namespace Spacats.Utils
     {
         private static T _instance;
         protected bool _applicationIsQuitting = false;
-        public static T Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = FindFirstObjectByType<T>();
-
-                    if (_instance == null)
-                    {
-                        GameObject go = new GameObject();
-                        go.name = typeof(T).Name + "";
-                        _instance = go.AddComponent<T>();
-                        _instance.SingletonSetDefaultParameters();
-                    }
-                }
-                return _instance;
-            }
-        }
-
         public static bool HasInstance => _instance != null;
 
         protected virtual void SingletonAwake() { CheckHierarchy(); TryToShowLog("Awake", 0, true); }
@@ -57,6 +36,26 @@ namespace Spacats.Utils
         /// Triggers every update + every scene gui. So it can work smoothly while in editor.
         /// </summary>
         protected virtual void SingletonSharedUpdate() { }
+
+        public static T Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = FindFirstObjectByType<T>();
+
+                    if (_instance == null)
+                    {
+                        GameObject go = new GameObject();
+                        go.name = typeof(T).Name + "";
+                        _instance = go.AddComponent<T>();
+                        _instance.SingletonSetDefaultParameters();
+                    }
+                }
+                return _instance;
+            }
+        }
 
         public bool IsInstance => Instance == this;
 

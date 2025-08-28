@@ -11,22 +11,27 @@ namespace Spacats.Utils
 
         public List<Vector3> LocalPositions = new List<Vector3>();
 
-        private MonoTweenController _cMonoTween;
+        private MonoTweenUnit _tween0;
+        private MonoTweenUnit _tween1;
+        private MonoTweenUnit _tween2;
+        private MonoTweenUnit _tween3;
+        private bool _paused = false;
+
+        //private MonoTweenController _cMonoTween;
 
         private void Awake()
         {
-            CheckController();
-            StartChainTween();
+            CreateChainTweens();
         }
 
-        private void CheckController()
-        {
-            if (_cMonoTween == null) _cMonoTween = ControllersHub.Instance.GetController<MonoTweenController>();
-        }
+        //private void CheckController()
+        //{
+        //    if (_cMonoTween == null) _cMonoTween = ControllersHub.Instance.GetController<MonoTweenController>();
+        //}
 
-        private void StartChainTween()
+        private void CreateChainTweens()
         {
-            MonoTweenUnit tw0 = new MonoTweenUnit(
+            _tween0 = new MonoTweenUnit(
                     delay: 0f,
                     duration: TweenDuration,
                     onStart: ()=> { },
@@ -34,7 +39,7 @@ namespace Spacats.Utils
                     onEnd: () => { }
                 );
 
-            MonoTweenUnit tw1 = new MonoTweenUnit(
+            _tween1 = new MonoTweenUnit(
                    delay: 0f,
                    duration: TweenDuration,
                    onStart: () => { },
@@ -42,7 +47,7 @@ namespace Spacats.Utils
                    onEnd: () => { }
                );
 
-            MonoTweenUnit tw2 = new MonoTweenUnit(
+            _tween2 = new MonoTweenUnit(
                    delay: 0f,
                    duration: TweenDuration,
                    onStart: () => { },
@@ -50,7 +55,7 @@ namespace Spacats.Utils
                    onEnd: () => { }
                );
 
-            MonoTweenUnit tw3 = new MonoTweenUnit(
+            _tween3 = new MonoTweenUnit(
                    delay: 0f,
                    duration: TweenDuration,
                    onStart: () => { },
@@ -58,13 +63,29 @@ namespace Spacats.Utils
                    onEnd: () => { }
                );
 
-            _cMonoTween.StartChain(-1, tw0, tw1, tw2, tw3);
+            
         }
 
         private void LerpAnimatonTarget(Vector3 startPos, Vector3 targetPos, float lerpProgress)
         {
             if (AnimationTarget == null) return;
             AnimationTarget.localPosition = Vector3.Lerp(startPos, targetPos, lerpProgress);
+        }
+
+        public void StartTweens()
+        {
+            MonoTweenController.Instance.StartChain(-1, _tween0, _tween1, _tween2, _tween3);
+        }
+
+        public void SwitchPauseTweens()
+        {
+            _paused = !_paused;
+            MonoTweenController.Instance.PauseChain(_paused, _tween0, _tween1, _tween2, _tween3);
+        }
+
+        public void StopTweens()
+        {
+            MonoTweenController.Instance.StopChain(_tween0, _tween1, _tween2, _tween3);
         }
     }
 }

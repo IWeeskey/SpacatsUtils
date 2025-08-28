@@ -5,7 +5,7 @@ namespace Spacats.Utils
     [Serializable]
     public class MonoTweenUnit
     {
-        private bool _isStopped;
+        private bool _isBroken;
         private bool _selfPaused;
         private bool _started;
 
@@ -15,18 +15,21 @@ namespace Spacats.Utils
         private float _nextStepTime;
 
         private int _currentRepeat;
-        private int _lastStepIndex = -1;
+        private int _lastStepIndex;
 
+        public bool IsBroken => _isBroken;
         public bool ApplyGlobalPause { get; set; }
         public bool IsComplete { get; private set; }
         public float Delay { get; set; }
         public float Duration { get; set; }
         public int RepeatCount { get; set; }
         public int StepsCount { get; set; }
+        public int ChainIndex;
         public string UnitID = "";
         public Action OnStart { get; set; }
         public Action<float> OnLerp { get; set; }
         public Action OnEnd { get; set; }
+        public Action OnChain { get; set; }
 
         public MonoTweenUnit(
             float delay,
@@ -48,10 +51,21 @@ namespace Spacats.Utils
             StepsCount = Mathf.Max(0, stepsCount);
         }
 
+        public void Start()
+        {
+            Reset();
+            MonoTweenController.Instance.StartSingle(this);
+        }
+
+        public void Break()
+        {
+            _isBroken = true;
+        }
+
         public void Reset()
         {
             IsComplete = false;
-            _isStopped = false;
+            _isBroken = false;
             _started = false;
             _selfPaused = false;
             _delayTimer = 0f;
@@ -59,11 +73,6 @@ namespace Spacats.Utils
             _time = 0f;
             _lastStepIndex = -1;
             _nextStepTime = 0f;
-        }
-
-        public void Stop()
-        {
-            _isStopped = true;
         }
 
         public void SelfPauseON()
@@ -78,7 +87,7 @@ namespace Spacats.Utils
 
         public void Update(float deltaTime, bool isGlobalPaused)
         {
-            if (IsComplete || _isStopped)
+            if (IsComplete || _isBroken)
             {
                 IsComplete = true;
                 return;

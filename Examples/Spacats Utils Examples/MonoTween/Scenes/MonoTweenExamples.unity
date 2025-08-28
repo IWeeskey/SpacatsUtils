@@ -152,6 +152,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AnimationTarget: {fileID: 887510774833285725}
+  ChainRepeatCount: -1
+  CurrentTweenPlayingIndex: 0
+  CurrentChainIndex: 0
   TweenDuration: 1
   LocalPositions:
   - {x: 10, y: 0, z: 0}
@@ -185,7 +188,7 @@ GameObject:
   - component: {fileID: 336219667}
   - component: {fileID: 336219666}
   m_Layer: 0
-  m_Name: '[SpaCats] PauseController'
+  m_Name: '[SpaCats] PauseController '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -207,6 +210,7 @@ MonoBehaviour:
   ExecuteInEditor: 0
   ShowLogs: 0
   ShowControllerLogs: 0
+  PersistsAtScenes: []
 --- !u!4 &336219667
 Transform:
   m_ObjectHideFlags: 0
@@ -254,10 +258,7 @@ MonoBehaviour:
   AlwaysOnTop: 1
   ShowLogs: 0
   ShowSingletonLogs: 0
-  _controllers:
-  - {fileID: 336219666}
-  - {fileID: 520325641}
-  - {fileID: 1573203292}
+  _controllers: []
 --- !u!4 &371722503
 Transform:
   m_ObjectHideFlags: 0
@@ -287,7 +288,7 @@ GameObject:
   - component: {fileID: 520325642}
   - component: {fileID: 520325641}
   m_Layer: 0
-  m_Name: '[SpaCats] MonoTweenController'
+  m_Name: '[SpaCats] MonoTweenController '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -309,6 +310,7 @@ MonoBehaviour:
   ExecuteInEditor: 1
   ShowLogs: 0
   ShowControllerLogs: 0
+  PersistsAtScenes: []
   PerformMeasurements: 1
 --- !u!4 &520325642
 Transform:
@@ -644,7 +646,7 @@ GameObject:
   - component: {fileID: 1528677963}
   - component: {fileID: 1528677962}
   m_Layer: 0
-  m_Name: ChainStepExample
+  m_Name: StepExample
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -669,8 +671,9 @@ MonoBehaviour:
   - {x: -10, y: -10, z: 0}
   - {x: 10, y: 10, z: 0}
   _stepTween:
-    UnitID: 
     _time: 0
+    ChainIndex: 0
+    UnitID: 
 --- !u!4 &1528677963
 Transform:
   m_ObjectHideFlags: 0
@@ -698,7 +701,7 @@ GameObject:
   - component: {fileID: 1573203293}
   - component: {fileID: 1573203292}
   m_Layer: 0
-  m_Name: '[SpaCats] GUIFps'
+  m_Name: '[SpaCats] GUIFps '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -720,6 +723,7 @@ MonoBehaviour:
   ExecuteInEditor: 1
   ShowLogs: 0
   ShowControllerLogs: 0
+  PersistsAtScenes: []
   PosX: 0.043
   PosY: 0.032
   FontSize: 0.05

@@ -37,8 +37,11 @@ namespace Spacats.Utils
         protected virtual void ControllerOnDisable() { TryToShowLog("OnDisable", 0, true); }
         protected virtual void ControllerOnDestroy() { TryToShowLog("OnDestroy", 0, true); }
         protected virtual void ControllerOnApplicationQuit() { TryToShowLog("OnApplicationQuit", 0, true); }
+        protected virtual void OnRegister() { TryToShowLog("OnRegister", 0, true); }
         public virtual void ControllerOnSceneUnloading(Scene scene) { TryToShowLog("OnSceneUnloading " + scene.name, 0, true); }
         public virtual void ControllerOnSceneLoaded(Scene scene, LoadSceneMode mode) { TryToShowLog("OnSceneLoaded " + scene.name, 0, true); }
+
+
 
         /// <summary>
         /// Same as basic unity Update()
@@ -56,7 +59,6 @@ namespace Spacats.Utils
 #if UNITY_EDITOR
         public virtual void ControllerOnSceneGUI(SceneView sceneView) { }
 #endif
-
         private void Awake()
         {
             RefreshName(); 
@@ -88,8 +90,8 @@ namespace Spacats.Utils
                 DestroyController();
                 return;
             }
-
             _registered = true;
+            OnRegister();
         }
 
         private void OnDisable()
