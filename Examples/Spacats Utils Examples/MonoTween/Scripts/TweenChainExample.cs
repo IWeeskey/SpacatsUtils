@@ -17,17 +17,10 @@ namespace Spacats.Utils
         private MonoTweenUnit _tween3;
         private bool _paused = false;
 
-        //private MonoTweenController _cMonoTween;
-
         private void Awake()
         {
             CreateChainTweens();
         }
-
-        //private void CheckController()
-        //{
-        //    if (_cMonoTween == null) _cMonoTween = ControllersHub.Instance.GetController<MonoTweenController>();
-        //}
 
         private void CreateChainTweens()
         {
@@ -62,8 +55,6 @@ namespace Spacats.Utils
                    onLerp: (float lerp) => { LerpAnimatonTarget(LocalPositions[3], LocalPositions[0], lerp); },
                    onEnd: () => { }
                );
-
-            
         }
 
         private void LerpAnimatonTarget(Vector3 startPos, Vector3 targetPos, float lerpProgress)

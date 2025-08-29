@@ -177,6 +177,7 @@ namespace Spacats.Utils
 
         public void DestroyController()
         {
+            ControllersHub.Instance.UnRegisterController(this);
             if (!Application.isPlaying)
             {
                 DestroyImmediate(gameObject);

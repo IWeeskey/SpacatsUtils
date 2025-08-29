@@ -7,6 +7,16 @@ namespace Spacats.Utils
     [DefaultExecutionOrder(-10)]
     public class GUIPermanentMessage : Controller
     {
+        private static GUIPermanentMessage _instance;
+        public static GUIPermanentMessage Instance
+        {
+            get
+            {
+                if (_instance == null) Debug.LogError("GUIPermanentMessage is not registered yet!");
+                return _instance;
+            }
+        }
+
         [Header("Display Settings")]
         [Range(0f, 1f)] public float PosX = 0.01f;
         [Range(0f, 1f)] public float PosY = 0.01f;
@@ -17,6 +27,12 @@ namespace Spacats.Utils
         public bool LogicEnabled = true;
 
         public string Message = "";
+
+        protected override void OnRegister()
+        {
+            base.OnRegister();
+            _instance = this;
+        }
 
         private void OnGUI()
         {

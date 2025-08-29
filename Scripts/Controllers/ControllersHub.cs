@@ -182,7 +182,9 @@ namespace Spacats.Utils
         private bool IsUnique(Controller controller)
         {
             var targetType = controller.GetType();
-            var group = _controllers.Where(c => c.GetType() == targetType).ToList();
+            var group = _controllers
+                .Where(c => c != null && c.GetType() == targetType)
+                .ToList();
 
             TryToShowLog($"Controller: {targetType.Name}, count: {group.Count}", 1);
 
