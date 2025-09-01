@@ -24,7 +24,7 @@ namespace Spacats.Utils
         public bool ShowLogs = false;
 
         [Tooltip("Show controller logs for testing purposes, such as 'Awake', 'OnEnable' etc.")]
-        public bool ShowControllerLogs = false;
+        public bool ShowCLogs = false;
 
         [Tooltip("If the list is empty, this controller will persist across all scenes. " +
             "Otherwise, it will automatically be destroyed when loading a scene whose name is not in the list.")]
@@ -32,32 +32,32 @@ namespace Spacats.Utils
 
         protected bool _applicationIsQuitting = false;
         protected bool _registered = false;
-        protected virtual void ControllerAwake() { TryToShowLog("Awake", 0, true); }
-        protected virtual void ControllerOnEnable() { TryToShowLog("OnEnable", 0, true); }
-        protected virtual void ControllerOnDisable() { TryToShowLog("OnDisable", 0, true); }
-        protected virtual void ControllerOnDestroy() { TryToShowLog("OnDestroy", 0, true); }
-        protected virtual void ControllerOnApplicationQuit() { TryToShowLog("OnApplicationQuit", 0, true); }
-        protected virtual void OnRegister() { TryToShowLog("OnRegister", 0, true); }
-        public virtual void ControllerOnSceneUnloading(Scene scene) { TryToShowLog("OnSceneUnloading " + scene.name, 0, true); }
-        public virtual void ControllerOnSceneLoaded(Scene scene, LoadSceneMode mode) { TryToShowLog("OnSceneLoaded " + scene.name, 0, true); }
+        protected virtual void CAwake() { TryToShowLog("Awake", LogType.Log, true); }
+        protected virtual void COnEnable() { TryToShowLog("OnEnable", LogType.Log, true); }
+        protected virtual void COnDisable() { TryToShowLog("OnDisable", LogType.Log, true); }
+        protected virtual void COnDestroy() { TryToShowLog("OnDestroy", LogType.Log, true); }
+        protected virtual void COnApplicationQuit() { TryToShowLog("OnApplicationQuit", LogType.Log, true); }
+        protected virtual void COnRegister() { TryToShowLog("OnRegister", LogType.Log, true); }
+        public virtual void COnSceneUnloading(Scene scene) { TryToShowLog("OnSceneUnloading " + scene.name, LogType.Log, true); }
+        public virtual void COnSceneLoaded(Scene scene, LoadSceneMode mode) { TryToShowLog("OnSceneLoaded " + scene.name, LogType.Log, true); }
 
 
 
         /// <summary>
         /// Same as basic unity Update()
         /// </summary>
-        public virtual void ControllerUpdate() { }
+        public virtual void CUpdate() { }
         /// <summary>
         /// Same as basic unity LateUpdate()
         /// </summary>
-        public virtual void ControllerLateUpdate() { }
+        public virtual void CLateUpdate() { }
         /// <summary>
         /// Triggers every update + every scene gui. So it can work smoothly while in editor.
         /// </summary>
-        public virtual void ControllerSharedUpdate() { }
+        public virtual void CSharedUpdate() { }
 
 #if UNITY_EDITOR
-        public virtual void ControllerOnSceneGUI(SceneView sceneView) { }
+        public virtual void COnSceneGUI(SceneView sceneView) { }
 #endif
         private void Awake()
         {
@@ -65,7 +65,7 @@ namespace Spacats.Utils
             CheckHierarchy();
             SceneLoaderHelper.MarkActiveSceneDirty();
             if (!ExecuteInEditor && !Application.isPlaying) return;
-            ControllerAwake();
+            CAwake();
             TryRegister();
         }
 
@@ -76,7 +76,7 @@ namespace Spacats.Utils
             CheckHierarchy();
 
             if (!ExecuteInEditor && !Application.isPlaying) return;
-            ControllerOnEnable();
+            COnEnable();
         }
         private void TryRegister()
         {
@@ -85,53 +85,52 @@ namespace Spacats.Utils
             bool registerResult = ControllersHub.Instance.RegisterController(this);
             if (!registerResult)
             {
-                TryToShowLog("Already registered!", 1, true);
+                TryToShowLog("Already registered!", LogType.Warning, true);
 
                 DestroyController();
                 return;
             }
             _registered = true;
-            OnRegister();
+            COnRegister();
         }
 
         private void OnDisable()
         {
             if (_registered) ControllersHub.Instance.UnRegisterController(this);
             if (!ExecuteInEditor && !Application.isPlaying) return;
-            ControllerOnDisable();
+            COnDisable();
         }
         private void OnDestroy()
         {
             if (!ExecuteInEditor && !Application.isPlaying) return;
-            ControllerOnDestroy();
+            COnDestroy();
         }
 
         private void OnApplicationQuit()
         {
             _applicationIsQuitting = true;
-            ControllerOnApplicationQuit();
+            COnApplicationQuit();
         }
 
-        /// <summary>
-        /// Log types: 
-        /// 0 - normal message
-        /// 1 - warning
-        /// 2 - error
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="logType"></param>
-        protected virtual void TryToShowLog(string message, int logType = 0, bool isControllerLog = false)
+        protected virtual void TryToShowLog(string message, LogType logType, bool isControllerLog = false)
         {
-            if (isControllerLog && !ShowControllerLogs && logType!=2) return;
-            if (!isControllerLog && !ShowLogs && logType != 2) return;
+            if (isControllerLog && !ShowCLogs && 
+                logType != LogType.Error && logType != LogType.Exception) return;
+
+            if (!isControllerLog && !ShowLogs &&
+               (logType != LogType.Error && logType != LogType.Exception)) return;
 
             string prefix = $"[Spacats Controller: {gameObject.name} {UniqueTag}] ";
 
             switch (logType)
             {
                 default: Debug.Log(prefix + message); break;
-                case 1: Debug.LogWarning(prefix + message); break;
-                case 2: Debug.LogError(prefix + message); break;
+                case LogType.Warning:
+                case LogType.Assert:
+                    Debug.LogWarning(prefix + message); break;
+                case LogType.Error:
+                case LogType.Exception:
+                    Debug.LogError(prefix + message); break;
             }
         }
 
@@ -154,7 +153,7 @@ namespace Spacats.Utils
         {
             if (PersistsAtScenes.Count == 0)
             {
-                ControllerOnSceneLoaded(scene, mode);
+                COnSceneLoaded(scene, mode);
                 return;
             }
 
@@ -171,7 +170,7 @@ namespace Spacats.Utils
                 }
             }
 
-            if (found) ControllerOnSceneLoaded(scene, mode);
+            if (found) COnSceneLoaded(scene, mode);
             else DestroyController();
         }
 

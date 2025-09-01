@@ -29,15 +29,15 @@ namespace Spacats.Utils
         public double UpdateTimeMS => _updateTimeMS;
         public string UpdateTimeString => _updateTimeString;
 
-        protected override void OnRegister()
+        protected override void COnRegister()
         {
-            base.OnRegister();
+            base.COnRegister();
             _instance = this;
         }
 
-        public override void ControllerOnSceneUnloading(Scene scene)
+        public override void COnSceneUnloading(Scene scene)
         {
-            base.ControllerOnSceneUnloading(scene);
+            base.COnSceneUnloading(scene);
             BreakAll();
         }
 
@@ -100,9 +100,9 @@ namespace Spacats.Utils
             _activeCount = 0;
         }
 
-        public override void ControllerSharedUpdate()
+        public override void CSharedUpdate()
         {
-            base.ControllerSharedUpdate();
+            base.CSharedUpdate();
             UpdateLogic();
         }
 

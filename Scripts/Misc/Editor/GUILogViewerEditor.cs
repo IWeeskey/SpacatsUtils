@@ -20,7 +20,7 @@ namespace Spacats.Utils
         {
             GUILogViewer targetScript = (GUILogViewer)target;
             targetScript.ExecuteInEditor = false;
-            targetScript.ShowControllerLogs = false;
+            targetScript.ShowCLogs = false;
             targetScript.ShowLogs = false;
             targetScript.UniqueTag = "";
         }

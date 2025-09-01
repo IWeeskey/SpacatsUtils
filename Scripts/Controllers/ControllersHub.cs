@@ -15,47 +15,47 @@ namespace Spacats.Utils
     {
         [SerializeField] private List<Controller> _controllers = new List<Controller>();
         #region overrides
-        protected override void SingletonAwake()
+        protected override void SAwake()
         {
-            base.SingletonAwake();
+            base.SAwake();
         }
-        protected override void SingletonSetDefaultParameters()
+        protected override void SSetDefaultParameters()
         {
-            base.SingletonSetDefaultParameters();
+            base.SSetDefaultParameters();
             ShowLogs = false;
-            ShowSingletonLogs = false;
+            ShowSLogs = false;
             AlwaysOnTop = true;
             CheckHierarchy();
         }
 
-        protected override void SingletonOnEnable()
+        protected override void SOnEnable()
         {
-            base.SingletonOnEnable();
+            base.SOnEnable();
             RefreshName();
             Clear();
         }
 
-        protected override void SingletonOnDisable()
+        protected override void SOnDisable()
         {
-            base.SingletonOnDisable();
+            base.SOnDisable();
             RefreshName();
             Clear();
         }
 
-        protected override void SingletonOnDestroy()
+        protected override void SOnDestroy()
         {
-            base.SingletonOnDestroy();
+            base.SOnDestroy();
             HandleDestroyLogic();
         }
 
-        protected override void SingletonOnApplicationQuit()
+        protected override void SOnApplicationQuit()
         {
-            base.SingletonOnApplicationQuit();
+            base.SOnApplicationQuit();
         }
 
-        protected override void OnSceneUnloading(Scene scene)
+        protected override void SOnSceneUnloading(Scene scene)
         {
-            base.OnSceneUnloading(scene);
+            base.SOnSceneUnloading(scene);
             foreach (Controller controller in _controllers)
             {
                 if (controller == null) continue;
@@ -63,13 +63,13 @@ namespace Spacats.Utils
                 {
                     continue;
                 }
-                controller.ControllerOnSceneUnloading(scene);
+                controller.COnSceneUnloading(scene);
             }
         }
 
-        protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        protected override void SOnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            base.OnSceneLoaded(scene, mode);
+            base.SOnSceneLoaded(scene, mode);
             if (_controllers.Count == 0) return;
 
             for (int i = _controllers.Count - 1; i>=0; i--)
@@ -80,9 +80,9 @@ namespace Spacats.Utils
             }
         }
 
-        protected override void SingletonUpdate()
+        protected override void SUpdate()
         {
-            base.SingletonUpdate();
+            base.SUpdate();
             foreach (Controller controller in _controllers)
             {
                 if (controller == null) continue;
@@ -90,13 +90,13 @@ namespace Spacats.Utils
                 {
                     continue;
                 }
-                controller.ControllerUpdate();
+                controller.CUpdate();
             }
         }
 
-        protected override void SingletonLateUpdate()
+        protected override void SLateUpdate()
         {
-            base.SingletonLateUpdate();
+            base.SLateUpdate();
 
             foreach (Controller controller in _controllers)
             {
@@ -105,7 +105,7 @@ namespace Spacats.Utils
                 {
                     continue;
                 }
-                controller.ControllerLateUpdate();
+                controller.CLateUpdate();
             }
         }
 
@@ -118,14 +118,14 @@ namespace Spacats.Utils
             foreach (Controller controller in _controllers)
             {
                 if (controller == null) continue;
-                controller.ControllerOnSceneGUI(sceneView);
+                controller.COnSceneGUI(sceneView);
             }
         }
 #endif
 
-        protected override void SingletonSharedUpdate()
+        protected override void SSharedUpdate()
         {
-            base.SingletonSharedUpdate();
+            base.SSharedUpdate();
 
             foreach (Controller controller in _controllers)
             {
@@ -134,7 +134,7 @@ namespace Spacats.Utils
                 {
                     continue;
                 }
-                controller.ControllerSharedUpdate();
+                controller.CSharedUpdate();
             }
         }
         #endregion
@@ -164,13 +164,13 @@ namespace Spacats.Utils
         {
             if (_controllers.Contains(controller))
             {
-                TryToShowLog("Controller already registered: " + controller.gameObject.name, 1);
+                TryToShowLog("Controller already registered: " + controller.gameObject.name, LogType.Warning);
                 return false;
             }
 
             if (!IsUnique(controller))
             {
-                TryToShowLog("Controller is not unique by tag: " + controller.gameObject.name, 1);
+                TryToShowLog("Controller is not unique by tag: " + controller.gameObject.name, LogType.Warning);
                 return false;
             }
 
@@ -186,7 +186,7 @@ namespace Spacats.Utils
                 .Where(c => c != null && c.GetType() == targetType)
                 .ToList();
 
-            TryToShowLog($"Controller: {targetType.Name}, count: {group.Count}", 1);
+            TryToShowLog($"Controller: {targetType.Name}, count: {group.Count}", LogType.Warning);
 
             var values = group.Select(c => c.UniqueTag).ToList();
 
@@ -196,7 +196,7 @@ namespace Spacats.Utils
             {
                 if (string.Equals(uTag, controller.UniqueTag))
                 {
-                    TryToShowLog($"{targetType.Name} same tag found!", 1);
+                    TryToShowLog($"{targetType.Name} same tag found!", LogType.Warning);
                     return false;
                 }
             }
@@ -221,7 +221,7 @@ namespace Spacats.Utils
                 result = controllersOfType.FirstOrDefault();
                 if (result == null)
                 {
-                    TryToShowLog($"Controller of type {typeof(T).Name} not found.", 2);
+                    TryToShowLog($"Controller of type {typeof(T).Name} not found.", LogType.Error);
                 }
             }
             else
@@ -229,7 +229,7 @@ namespace Spacats.Utils
                 result = controllersOfType.FirstOrDefault(c => c.UniqueTag == tag);
                 if (result == null)
                 {
-                    TryToShowLog($"Controller of type {typeof(T).Name} with tag '{tag}' not found.", 2);
+                    TryToShowLog($"Controller of type {typeof(T).Name} with tag '{tag}' not found.", LogType.Error);
                 }
             }
 

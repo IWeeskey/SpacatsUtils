@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 336219667}
   - component: {fileID: 336219666}
   m_Layer: 0
-  m_Name: '[SpaCats] PauseController'
+  m_Name: '[SpaCats] PauseController '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -155,6 +155,7 @@ MonoBehaviour:
   ExecuteInEditor: 0
   ShowLogs: 0
   ShowControllerLogs: 0
+  PersistsAtScenes: []
 --- !u!4 &336219667
 Transform:
   m_ObjectHideFlags: 0
@@ -202,7 +203,12 @@ MonoBehaviour:
   AlwaysOnTop: 1
   ShowLogs: 0
   ShowSingletonLogs: 0
-  _controllers: []
+  _controllers:
+  - {fileID: 336219666}
+  - {fileID: 520325641}
+  - {fileID: 1573203292}
+  - {fileID: 1695338156}
+  - {fileID: 1835266719}
 --- !u!4 &371722503
 Transform:
   m_ObjectHideFlags: 0
@@ -234,7 +240,7 @@ GameObject:
   - component: {fileID: 520325642}
   - component: {fileID: 520325641}
   m_Layer: 0
-  m_Name: '[SpaCats] MonoTweenController'
+  m_Name: '[SpaCats] MonoTweenController '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -256,6 +262,7 @@ MonoBehaviour:
   ExecuteInEditor: 1
   ShowLogs: 0
   ShowControllerLogs: 0
+  PersistsAtScenes: []
   PerformMeasurements: 1
 --- !u!4 &520325642
 Transform:
@@ -367,7 +374,7 @@ GameObject:
   - component: {fileID: 1573203293}
   - component: {fileID: 1573203292}
   m_Layer: 0
-  m_Name: '[SpaCats] GUIFps'
+  m_Name: '[SpaCats] GUIFps '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -389,6 +396,7 @@ MonoBehaviour:
   ExecuteInEditor: 1
   ShowLogs: 0
   ShowControllerLogs: 0
+  PersistsAtScenes: []
   PosX: 0.043
   PosY: 0.032
   FontSize: 0.05
@@ -421,7 +429,7 @@ GameObject:
   - component: {fileID: 1695338157}
   - component: {fileID: 1695338156}
   m_Layer: 0
-  m_Name: '[SpaCats] GUILogViewer'
+  m_Name: '[SpaCats] GUILogViewer '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -443,6 +451,7 @@ MonoBehaviour:
   ExecuteInEditor: 0
   ShowLogs: 0
   ShowControllerLogs: 0
+  PersistsAtScenes: []
   _topPercent: 0
   _bottomPercent: 0.1
   _fontSizePercent: 0.02
@@ -493,7 +502,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PerformLogic: 1
-  _buttonCount: 3
+  _buttonCount: 2
   _buttonHeightPercent: 0.08
   _buttonSpacing: 5
   _fontScale: 0.4
@@ -621,7 +630,7 @@ GameObject:
   - component: {fileID: 1835266720}
   - component: {fileID: 1835266719}
   m_Layer: 0
-  m_Name: '[SpaCats] GUIPermanentMessage'
+  m_Name: '[SpaCats] GUIPermanentMessage '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -643,6 +652,7 @@ MonoBehaviour:
   ExecuteInEditor: 1
   ShowLogs: 0
   ShowControllerLogs: 0
+  PersistsAtScenes: []
   PosX: 0.01
   PosY: 0.824
   FontSize: 0.0298

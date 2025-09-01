@@ -33,16 +33,16 @@ namespace Spacats.Utils
             public LogType Type;
         }
 
-        protected override void ControllerOnEnable()
+        protected override void COnEnable()
         {
-            base.ControllerOnEnable();
+            base.COnEnable();
             if (!LoggingEnabled) return;
             Application.logMessageReceived += HandleLog;
         }
 
-        protected override void ControllerOnDisable()
+        protected override void COnDisable()
         {
-            base.ControllerOnDisable();
+            base.COnDisable();
             if (!LoggingEnabled) return;
             Application.logMessageReceived -= HandleLog;
         }

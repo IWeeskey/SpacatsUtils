@@ -26,9 +26,9 @@ namespace Spacats.Utils
         public event UnityAction<string, float> OnLoading;
         public event UnityAction<string> OnLoadFinished;
 
-        protected override void OnRegister()
+        protected override void COnRegister()
         {
-            base.OnRegister();
+            base.COnRegister();
             _instance = this;
         }
 
@@ -83,20 +83,20 @@ namespace Spacats.Utils
                 LoadSceneMode.Single);
         }
 
-        public override void ControllerOnSceneLoaded(Scene scene, LoadSceneMode mode)
+        public override void COnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             if (!_registered) return;
 
-            base.ControllerOnSceneLoaded(scene, mode);
+            base.COnSceneLoaded(scene, mode);
 
             _isLoading = false;
             _loadingSceneName = "";
             OnLoadFinished?.Invoke(scene.name);
         }
 
-        public override void ControllerOnSceneUnloading(Scene scene)
+        public override void COnSceneUnloading(Scene scene)
         {
-            base.ControllerOnSceneUnloading(scene);
+            base.COnSceneUnloading(scene);
         }
     }
 }

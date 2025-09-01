@@ -19,7 +19,7 @@ namespace Spacats.Utils
         private void SetDefaultParameters()
         {
             SceneController targetScript = (SceneController)target;
-            targetScript.ShowControllerLogs = false;
+            targetScript.ShowCLogs = false;
             targetScript.ShowLogs = false;
             targetScript.UniqueTag = "";
             targetScript.PersistsAtScenes.Clear();

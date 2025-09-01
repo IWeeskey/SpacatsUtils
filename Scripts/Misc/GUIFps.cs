@@ -29,9 +29,9 @@ namespace Spacats.Utils
         private float _avg1Timer = 0f;
         private float _avg1Result = 0f;
 
-        public override void ControllerSharedUpdate()
+        public override void CSharedUpdate()
         {
-            base.ControllerSharedUpdate();
+            base.CSharedUpdate();
             DoLogic();
         }
 

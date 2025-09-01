@@ -20,7 +20,7 @@ namespace Spacats.Utils
         private void SetDefaultParameters()
         {
             MonoTweenController targetScript = (MonoTweenController)target;
-            targetScript.ShowControllerLogs = false;
+            targetScript.ShowCLogs = false;
             targetScript.ShowLogs = false;
             targetScript.UniqueTag = "";
         }

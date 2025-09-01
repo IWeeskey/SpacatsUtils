@@ -12,19 +12,19 @@ namespace Spacats.Utils
         public delegate void PauseSwitched(bool _newState);
         public static event PauseSwitched OnPauseSwitched;
 
-        protected override void ControllerOnEnable()
+        protected override void COnEnable()
         {
-            base.ControllerOnEnable();
+            base.COnEnable();
         }
 
-        protected override void ControllerOnDisable()
+        protected override void COnDisable()
         {
-            base.ControllerOnDisable();
+            base.COnDisable();
         }
 
-        public override void ControllerSharedUpdate()
+        public override void CSharedUpdate()
         {
-            base.ControllerSharedUpdate();
+            base.CSharedUpdate();
         }
 
         public void SwitchPause()

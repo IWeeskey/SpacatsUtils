@@ -28,9 +28,9 @@ namespace Spacats.Utils
 
         public string Message = "";
 
-        protected override void OnRegister()
+        protected override void COnRegister()
         {
-            base.OnRegister();
+            base.COnRegister();
             _instance = this;
         }
 

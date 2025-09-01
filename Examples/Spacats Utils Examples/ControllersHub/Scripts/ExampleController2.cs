@@ -7,19 +7,19 @@ namespace Spacats.Utils
     {
         [Tooltip("Updated during update")]
         public int RandomValue = 0;
-        protected override void ControllerOnEnable()
+        protected override void COnEnable()
         {
-            base.ControllerOnEnable();
+            base.COnEnable();
         }
 
-        protected override void ControllerOnDisable()
+        protected override void COnDisable()
         {
-            base.ControllerOnDisable();
+            base.COnDisable();
         }
 
-        public override void ControllerSharedUpdate()
+        public override void CSharedUpdate()
         {
-            base.ControllerSharedUpdate();
+            base.CSharedUpdate();
             RandomValue = Random.Range(0,100);
         }
     }

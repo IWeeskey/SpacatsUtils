@@ -16,26 +16,26 @@ namespace Spacats.Utils
         protected bool _applicationIsQuitting = false;
         public static bool HasInstance => _instance != null;
 
-        protected virtual void SingletonAwake() { CheckHierarchy(); TryToShowLog("Awake", 0, true); }
-        protected virtual void SingletonOnEnable() { CheckHierarchy(); TryToShowLog("OnEnable", 0, true); }
-        protected virtual void SingletonOnDisable() { CheckHierarchy(); TryToShowLog("OnDisable", 0, true); }
-        protected virtual void SingletonOnDestroy() { TryToShowLog("OnDestroy", 0, true); }
-        protected virtual void SingletonOnApplicationQuit() {  TryToShowLog("OnApplicationQuit", 0, true);}
-        protected virtual void SingletonSetDefaultParameters() { TryToShowLog("SetDefaultParameters", 0, true); }
-        protected virtual void OnSceneUnloading(Scene scene) { TryToShowLog("OnSceneUnloading", 0, true); }
-        protected virtual void OnSceneLoaded(Scene scene, LoadSceneMode mode) { TryToShowLog("OnSceneLoaded", 0, true); }
+        protected virtual void SAwake() { CheckHierarchy(); TryToShowLog("Awake", LogType.Log, true); }
+        protected virtual void SOnEnable() { CheckHierarchy(); TryToShowLog("OnEnable", LogType.Log, true); }
+        protected virtual void SOnDisable() { CheckHierarchy(); TryToShowLog("OnDisable", LogType.Log, true); }
+        protected virtual void SOnDestroy() { TryToShowLog("OnDestroy", LogType.Log, true); }
+        protected virtual void SOnApplicationQuit() {  TryToShowLog("OnApplicationQuit", LogType.Log, true);}
+        protected virtual void SSetDefaultParameters() { TryToShowLog("SetDefaultParameters", LogType.Log, true); }
+        protected virtual void SOnSceneUnloading(Scene scene) { TryToShowLog("OnSceneUnloading", LogType.Log, true); }
+        protected virtual void SOnSceneLoaded(Scene scene, LoadSceneMode mode) { TryToShowLog("OnSceneLoaded", LogType.Log, true); }
         /// <summary>
         /// Same as basic unity Update()
         /// </summary>
-        protected virtual void SingletonUpdate() { }
+        protected virtual void SUpdate() { }
         /// <summary>
         /// Same as basic unity LateUpdate()
         /// </summary>
-        protected virtual void SingletonLateUpdate() { }
+        protected virtual void SLateUpdate() { }
         /// <summary>
         /// Triggers every update + every scene gui. So it can work smoothly while in editor.
         /// </summary>
-        protected virtual void SingletonSharedUpdate() { }
+        protected virtual void SSharedUpdate() { }
 
         public static T Instance
         {
@@ -50,7 +50,7 @@ namespace Spacats.Utils
                         GameObject go = new GameObject();
                         go.name = typeof(T).Name + "";
                         _instance = go.AddComponent<T>();
-                        _instance.SingletonSetDefaultParameters();
+                        _instance.SSetDefaultParameters();
                     }
                 }
                 return _instance;
@@ -66,7 +66,7 @@ namespace Spacats.Utils
         public bool ShowLogs = false;
 
         [Tooltip("Show singleton logs for testing purposes, such as 'SingletonAwake', 'SingletonOnEnable' etc.")]
-        public bool ShowSingletonLogs = false;
+        public bool ShowSLogs = false;
 
 #if UNITY_EDITOR
         protected virtual void SingletonOnSceneGUI(SceneView sceneView) { }
@@ -79,12 +79,12 @@ namespace Spacats.Utils
                 _instance = this as T;
                 _applicationIsQuitting = false;
                 if (Application.isPlaying) DontDestroyOnLoad(gameObject);
-                SingletonAwake();
+                SAwake();
                 SceneLoaderHelper.MarkActiveSceneDirty();
                 return;
             }
             if (IsInstance) return;
-            TryToShowLog("Trying to instantiate a second instance. Destroying the new one.", 1, true);
+            TryToShowLog("Trying to instantiate a second instance. Destroying the new one.",  LogType.Warning, true);
 
             if (!Application.isPlaying)
             {
@@ -99,7 +99,7 @@ namespace Spacats.Utils
         private void OnEnable()
         {
             if (!IsInstance) return;
-            SingletonOnEnable();
+            SOnEnable();
             SceneManager.sceneUnloaded += HandleSceneUnloaded;
             SceneManager.sceneLoaded += HandleSceneLoaded;
 #if UNITY_EDITOR
@@ -110,7 +110,7 @@ namespace Spacats.Utils
         private void OnDisable()
         {
             if (!IsInstance) return;
-            SingletonOnDisable();
+            SOnDisable();
             SceneManager.sceneUnloaded -= HandleSceneUnloaded;
             SceneManager.sceneLoaded -= HandleSceneLoaded;
 #if UNITY_EDITOR
@@ -122,42 +122,42 @@ namespace Spacats.Utils
         private void DuringSceneGui(SceneView sView)
         {
             SingletonOnSceneGUI(sView);
-            SingletonSharedUpdate();
+            SSharedUpdate();
         }
 #endif
 
         private void HandleSceneUnloaded(Scene scene)
         {
-            OnSceneUnloading(scene);
+            SOnSceneUnloading(scene);
         }
 
         private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            OnSceneLoaded(scene, mode);
+            SOnSceneLoaded(scene, mode);
         }
 
         private void Update()
         {
             if (!IsInstance) return;
-            SingletonUpdate();
-            SingletonSharedUpdate();
+            SUpdate();
+            SSharedUpdate();
         }
 
         private void LateUpdate()
         {
             if (!IsInstance) return;
-            SingletonLateUpdate();
+            SLateUpdate();
         }
 
         private void OnApplicationQuit()
         {
             _applicationIsQuitting = true;
-            SingletonOnApplicationQuit();
+            SOnApplicationQuit();
         }
 
         private void OnDestroy()
         {
-            SingletonOnDestroy();
+            SOnDestroy();
         }
 
         public virtual void CheckHierarchy()
@@ -170,27 +170,25 @@ namespace Spacats.Utils
             transform.eulerAngles = Vector3.zero;
         }
 
-
-        /// <summary>
-        /// Log types: 
-        /// 0 - normal message
-        /// 1 - warning
-        /// 2 - error
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="logType"></param>
-        protected virtual void TryToShowLog(string message, int logType = 0, bool isSingletonLog = false)
+        protected virtual void TryToShowLog(string message, LogType logType = LogType.Log, bool isSingletonLog = false)
         {
-            if (isSingletonLog && !ShowSingletonLogs && logType != 2) return;
-            if (!isSingletonLog && !ShowLogs && logType != 2) return;
+            if (isSingletonLog && !ShowSLogs &&
+                logType != LogType.Error && logType != LogType.Exception) return;
 
-            string prefix = $"[Spacats Singleton: {typeof(T).Name}] ";
+            if (!isSingletonLog && !ShowLogs &&
+               (logType != LogType.Error && logType != LogType.Exception)) return;
+
+            string prefix = $"[Spacats Singleton: {gameObject.name}] ";
 
             switch (logType)
             {
                 default: Debug.Log(prefix + message); break;
-                case 1: Debug.LogWarning(prefix + message); break;
-                case 2: Debug.LogError(prefix + message); break;
+                case LogType.Warning:
+                case LogType.Assert:
+                    Debug.LogWarning(prefix + message); break;
+                case LogType.Error:
+                case LogType.Exception:
+                    Debug.LogError(prefix + message); break;
             }
         }
     }

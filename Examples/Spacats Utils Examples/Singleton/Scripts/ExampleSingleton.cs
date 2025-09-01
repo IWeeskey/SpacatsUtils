@@ -7,34 +7,34 @@ namespace Spacats.Utils
     {
         public int TestValue = 0;
 
-        protected override void SingletonAwake()
+        protected override void SAwake()
         {
-            base.SingletonAwake();
+            base.SAwake();
         }
 
-        protected override void SingletonOnEnable()
+        protected override void SOnEnable()
         {
-            base.SingletonOnEnable();
+            base.SOnEnable();
         }
 
-        protected override void SingletonOnDisable()
+        protected override void SOnDisable()
         {
-            base.SingletonOnDisable();
+            base.SOnDisable();
         }
 
-        protected override void SingletonOnDestroy()
+        protected override void SOnDestroy()
         {
-            base.SingletonOnDestroy();
+            base.SOnDestroy();
         }
 
-        protected override void SingletonSharedUpdate()
+        protected override void SSharedUpdate()
         {
-            base.SingletonSharedUpdate();
+            base.SSharedUpdate();
         }
 
-        protected override void SingletonOnApplicationQuit()
+        protected override void SOnApplicationQuit()
         {
-            base.SingletonOnApplicationQuit();
+            base.SOnApplicationQuit();
         }
     }
 }

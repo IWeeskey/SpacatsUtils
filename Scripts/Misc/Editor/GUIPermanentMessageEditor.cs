@@ -19,7 +19,7 @@ namespace Spacats.Utils
         private void SetDefaultParameters()
         {
             GUIPermanentMessage targetScript = (GUIPermanentMessage)target;
-            targetScript.ShowControllerLogs = false;
+            targetScript.ShowCLogs = false;
             targetScript.ShowLogs = false;
             targetScript.UniqueTag = "";
         }
