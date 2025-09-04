@@ -51,7 +51,7 @@ namespace Spacats.Utils
             SerializedProperty showLogs = serializedObject.FindProperty("ShowLogs");
             EditorGUILayout.PropertyField(showLogs);
 
-            SerializedProperty showSingletonLogs = serializedObject.FindProperty("ShowSingletonLogs");
+            SerializedProperty showSingletonLogs = serializedObject.FindProperty("ShowSLogs");
             EditorGUILayout.PropertyField(showSingletonLogs);
         }
 

@@ -15,6 +15,11 @@ namespace Spacats.Utils
         [Range(0.01f, 0.2f)]
         [SerializeField] private float _fontSizePercent = 0.02f;
 
+        private Vector2 _scrollPosition;
+        private readonly List<LogEntry> _logs = new List<LogEntry>();
+
+        private static GUILogViewer _instance;
+
         [Header("Functionality")]
         public bool LoggingEnabled = true;
         [SerializeField] private bool _isLogOpen = false;
@@ -22,15 +27,27 @@ namespace Spacats.Utils
         public void OpenLog() => _isLogOpen = true;
         public void CloseLog() => _isLogOpen = false;
 
-
-        private Vector2 _scrollPosition;
-        private readonly List<LogEntry> _logs = new List<LogEntry>();
         public void ClearLog() => _logs.Clear();
+        public static GUILogViewer Instance
+        {
+            get
+            {
+                if (_instance == null) Debug.LogError("GUILogViewer is not registered yet!");
+                return _instance;
+            }
+        }
+
 
         private struct LogEntry
         {
             public string Message;
             public LogType Type;
+        }
+
+        protected override void COnRegister()
+        {
+            base.COnRegister();
+            _instance = this;
         }
 
         protected override void COnEnable()
