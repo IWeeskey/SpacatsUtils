@@ -56,10 +56,12 @@ namespace Spacats.Utils
             int counter = 0;
             for (int i = 0; i < count; i++)
             {
-                counter++;
+                counter += i & 1;
             }
-            Debug.Log("Count: " + counter);
+
             TimeTracker.Finish("IterationsTest");
+
+            Debug.Log("Count: " + counter);
         }
 
     }

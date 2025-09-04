@@ -154,7 +154,10 @@ MonoBehaviour:
   AlwaysOnTop: 1
   ShowLogs: 0
   ShowSLogs: 0
-  _controllers: []
+  _controllers:
+  - {fileID: 1573203292}
+  - {fileID: 1695338156}
+  - {fileID: 1835266719}
 --- !u!4 &371722503
 Transform:
   m_ObjectHideFlags: 0
@@ -203,11 +206,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PerformLogic: 1
-  _buttonCount: 3
+  _buttonCount: 4
   _buttonHeightPercent: 0.08
   _buttonSpacing: 5
   _fontScale: 0.4
-  IterationsCount: 100
 --- !u!4 &551567959
 Transform:
   m_ObjectHideFlags: 0
