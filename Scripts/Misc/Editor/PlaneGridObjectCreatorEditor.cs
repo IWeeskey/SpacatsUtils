@@ -12,7 +12,7 @@ namespace Spacats.Utils
 
             DrawDefaultInspector();
 
-            if (GUILayout.Button("Create Now"))
+            if (GUILayout.Button("Create Immediate"))
             {
                 targetScript.GenerateImmediate();
             }
