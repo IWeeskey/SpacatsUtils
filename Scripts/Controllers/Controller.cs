@@ -97,6 +97,7 @@ namespace Spacats.Utils
         private void OnDisable()
         {
             if (_registered) ControllersHub.Instance.UnRegisterController(this);
+            _registered = false;
             if (!ExecuteInEditor && !Application.isPlaying) return;
             COnDisable();
         }
