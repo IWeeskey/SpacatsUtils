@@ -26,6 +26,8 @@ namespace Spacats.Utils
 
             Clear();
 
+            Debug.Log("Trying to instantiate: " + PlaymodeSize * PlaymodeSize + " objects");
+
             float half = (PlaymodeSize - 1) * Gap * 0.5f;
 
             for (int x = 0; x < PlaymodeSize; x++)
@@ -56,6 +58,9 @@ namespace Spacats.Utils
 
             Clear();
 
+            Debug.Log("Trying to instantiate: " + ImmediateSize* ImmediateSize + " objects");
+            TimeTracker.Start("PlaneGridObjectCreator");
+
             float half = (ImmediateSize - 1) * Gap * 0.5f;
 
             for (int x = 0; x < ImmediateSize; x++)
@@ -66,6 +71,8 @@ namespace Spacats.Utils
                     Instantiate(Prefab, Parent.position + localPos, Quaternion.identity, Parent);
                 }
             }
+
+            TimeTracker.Finish("PlaneGridObjectCreator", true);
         }
 
         public void Clear()
