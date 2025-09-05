@@ -7,6 +7,10 @@ namespace Spacats.Utils
         [Min(1)] public int ImmediateSize = 10;
         [Min(1)] public int PlaymodeSize = 10;
         [Min(0f)] public float Gap;
+
+        public Vector3 MinEulers;
+        public Vector3 MaxEulers;
+
         public GameObject Prefab;
         public Transform Parent;
 
@@ -28,14 +32,11 @@ namespace Spacats.Utils
 
             Debug.Log("Trying to instantiate: " + PlaymodeSize * PlaymodeSize + " objects");
 
-            float half = (PlaymodeSize - 1) * Gap * 0.5f;
-
             for (int x = 0; x < PlaymodeSize; x++)
             {
                 for (int z = 0; z < PlaymodeSize; z++)
                 {
-                    Vector3 localPos = new Vector3(x * Gap - half, 0f, z * Gap - half);
-                    Instantiate(Prefab, Parent.position + localPos, Quaternion.identity, Parent);
+                    InstantiateAtGridPoint(x, z);
                 }
 
                 yield return new WaitForSeconds(0.0f);
@@ -61,18 +62,30 @@ namespace Spacats.Utils
             Debug.Log("Trying to instantiate: " + ImmediateSize* ImmediateSize + " objects");
             TimeTracker.Start("PlaneGridObjectCreator");
 
-            float half = (ImmediateSize - 1) * Gap * 0.5f;
-
             for (int x = 0; x < ImmediateSize; x++)
             {
                 for (int z = 0; z < ImmediateSize; z++)
                 {
-                    Vector3 localPos = new Vector3(x * Gap - half, 0f, z * Gap - half);
-                    Instantiate(Prefab, Parent.position + localPos, Quaternion.identity, Parent);
+                    InstantiateAtGridPoint(x,z);
                 }
             }
 
             TimeTracker.Finish("PlaneGridObjectCreator", true);
+        }
+        private void InstantiateAtGridPoint(int x, int z)
+        {
+            float half = (PlaymodeSize - 1) * Gap * 0.5f;
+
+            if (!Application.isPlaying) half = (ImmediateSize - 1) * Gap * 0.5f;
+
+            Vector3 localPos = new Vector3(x * Gap - half, 0f, z * Gap - half);
+            Vector3 localEulers = new Vector3(Random.Range(MinEulers.x, MaxEulers.x), 
+                Random.Range(MinEulers.y, MaxEulers.y), 
+                Random.Range(MinEulers.z, MaxEulers.z));
+
+            GameObject newGO = Instantiate(Prefab, Vector3.zero, Quaternion.identity, Parent);
+            newGO.transform.localPosition = localPos;
+            newGO.transform.localEulerAngles = localEulers;
         }
 
         public void Clear()
