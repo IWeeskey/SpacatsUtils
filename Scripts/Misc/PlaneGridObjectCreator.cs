@@ -14,6 +14,8 @@ namespace Spacats.Utils
         public GameObject Prefab;
         public Transform Parent;
 
+        public bool IEnumeratorCreation = true;
+
         private IEnumerator Start()
         {
             if (Parent == null)
@@ -39,8 +41,10 @@ namespace Spacats.Utils
                     InstantiateAtGridPoint(x, z);
                 }
 
-                yield return new WaitForSeconds(0.0f);
+                if (IEnumeratorCreation) yield return new WaitForSeconds(0.0f);
             }
+
+            yield return new WaitForSeconds(0.0f);
         }
 
         public void GenerateImmediate()
@@ -86,6 +90,8 @@ namespace Spacats.Utils
             GameObject newGO = Instantiate(Prefab, Vector3.zero, Quaternion.identity, Parent);
             newGO.transform.localPosition = localPos;
             newGO.transform.localEulerAngles = localEulers;
+
+            OnObjectInstantiated(newGO, x, z);
         }
 
         public void Clear()
@@ -105,6 +111,11 @@ namespace Spacats.Utils
             {
                 DestroyImmediate(target.GetChild(i).gameObject);
             }
+        }
+
+        protected virtual void OnObjectInstantiated(GameObject gObject, int x, int z)
+        { 
+        
         }
     }
 }
