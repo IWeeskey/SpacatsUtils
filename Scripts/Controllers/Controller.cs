@@ -35,6 +35,8 @@ namespace Spacats.Utils
         protected virtual void CAwake() { TryToShowLog("Awake", LogType.Log, true); }
         protected virtual void COnEnable() { TryToShowLog("OnEnable", LogType.Log, true); }
         protected virtual void COnDisable() { TryToShowLog("OnDisable", LogType.Log, true); }
+        protected virtual void COnRegisteredEnable() { TryToShowLog("COnRegisteredEnable", LogType.Log, true); }
+        protected virtual void COnRegisteredDisable() { TryToShowLog("COnRegisteredDisable", LogType.Log, true); }
         protected virtual void COnDestroy() { TryToShowLog("OnDestroy", LogType.Log, true); }
         protected virtual void COnApplicationQuit() { TryToShowLog("OnApplicationQuit", LogType.Log, true); }
         protected virtual void COnRegister() { TryToShowLog("OnRegister", LogType.Log, true); }
@@ -77,6 +79,7 @@ namespace Spacats.Utils
 
             if (!ExecuteInEditor && !Application.isPlaying) return;
             COnEnable();
+            if (_registered) COnRegisteredEnable();
         }
         private void TryRegister()
         {
@@ -96,7 +99,12 @@ namespace Spacats.Utils
 
         private void OnDisable()
         {
-            if (_registered) ControllersHub.Instance.UnRegisterController(this);
+            if (_registered)
+            {
+                COnRegisteredDisable();
+                ControllersHub.Instance.UnRegisterController(this);
+            }
+
             _registered = false;
             if (!ExecuteInEditor && !Application.isPlaying) return;
             COnDisable();
