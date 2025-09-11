@@ -41,6 +41,12 @@ namespace Spacats.Utils
             BreakAll();
         }
 
+        protected override void COnDisable()
+        {
+            base.COnDisable();
+            BreakAll();
+        }
+
         private void UpdateLogic()
         {
             IsPaused = PauseController.IsPaused;
@@ -82,6 +88,8 @@ namespace Spacats.Utils
 
         private void Add(MonoTweenUnit tween)
         {
+            if (!enabled) return;
+
             if (_activeCount < _tweens.Count)
             {
                 _tweens[_activeCount] = tween;
@@ -96,6 +104,7 @@ namespace Spacats.Utils
 
         public void BreakAll()
         {
+            TryToShowLog("MonoTween Break All", LogType.Log, false);
             _tweens.Clear();
             _activeCount = 0;
         }
@@ -111,7 +120,7 @@ namespace Spacats.Utils
             Add(unit);
         }
 
-        public void Break(MonoTweenUnit unit)
+        public void BreakSingle(MonoTweenUnit unit)
         {
             unit.Break();
         }

@@ -7,30 +7,52 @@ namespace Spacats.Utils
     [CustomEditor(typeof(MonoTweenController), true)]
     public class MonoTweenControllerEditor : Editor
     {
+        private int _tabIndex = 0;
+        private readonly string[] _tabHeaders = { "Mono Tween Settings", "Controller Settings" };
+
         public override void OnInspectorGUI()
         {
-            MonoTweenController targetScript = (MonoTweenController)target;
+            serializedObject.Update();
             SetDefaultParameters();
-            DrawSingletonParameters();
+
+            _tabIndex = GUILayout.Toolbar(_tabIndex, _tabHeaders);
+            EditorGUILayout.Space();
+
+            switch (_tabIndex)
+            {
+                case 0:
+                    DrawTweenSettings();
+                    break;
+                case 1:
+                    DrawControllerSettings();
+                    break;
+            }
+
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        private void DrawTweenSettings()
+        {
             DrawFields();
             TryDrawMeasurementsInfo();
-            serializedObject.ApplyModifiedProperties();
+        }
+
+        private void DrawControllerSettings()
+        {
+            SerializedProperty executeInEditor = serializedObject.FindProperty("ExecuteInEditor");
+            EditorGUILayout.PropertyField(executeInEditor);
+
+            SerializedProperty showLogs = serializedObject.FindProperty("ShowLogs");
+            EditorGUILayout.PropertyField(showLogs);
+
+            SerializedProperty showCLogs = serializedObject.FindProperty("ShowCLogs");
+            EditorGUILayout.PropertyField(showCLogs);
         }
 
         private void SetDefaultParameters()
         {
             MonoTweenController targetScript = (MonoTweenController)target;
-            targetScript.ShowCLogs = false;
-            targetScript.ShowLogs = false;
             targetScript.UniqueTag = "";
-        }
-
-        private void DrawSingletonParameters()
-        {
-            MonoTweenController targetScript = (MonoTweenController)target;
-
-            SerializedProperty executeInEditor = serializedObject.FindProperty("ExecuteInEditor");
-            EditorGUILayout.PropertyField(executeInEditor);
         }
 
         private void DrawFields()
