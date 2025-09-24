@@ -1,38 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
 namespace Spacats.Utils
 {
     [DefaultExecutionOrder(-10)]
     public class PauseController : Controller
     {
+        private static PauseController _instance;
+        public static PauseController Instance
+        {
+            get
+            {
+                if (_instance == null) Debug.LogError("PauseController is not initialized yet!");
+                return _instance;
+            }
+        }
+        public static bool HasInstance => _instance != null;
+        
         private static bool _paused = false;
         public static bool IsPaused => _paused;
 
         public delegate void PauseSwitched(bool _newState);
         public static event PauseSwitched OnPauseSwitched;
 
-        protected override void COnEnable()
+        protected override void COnRegister()
         {
-            base.COnEnable();
+            base.COnRegister();
+            _instance = this;
         }
-
-        protected override void COnDisable()
-        {
-            base.COnDisable();
-        }
-
-        public override void CSharedUpdate()
-        {
-            base.CSharedUpdate();
-        }
-
+        
         public void SwitchPause()
         {
             if (_paused) PauseOFF();
             else PauseON();
         }
-
 
         public void PauseON()
         {

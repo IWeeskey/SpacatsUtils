@@ -21,6 +21,7 @@ namespace Spacats.Utils
                 return _instance;
             }
         }
+        public static bool HasInstance => _instance != null;
 
         public bool IsPaused { get; set; }
         public int ActiveTweensCount => _activeCount;
