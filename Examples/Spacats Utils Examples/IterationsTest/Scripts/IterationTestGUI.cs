@@ -9,8 +9,8 @@ namespace Spacats.Utils
     {
         public int Iterations = 1_000_000;
         
-        private List<EmptyClass> _list;
-        private List<EmptyMonoBehClass> _listMono;
+        [HideInInspector] public List<EmptyClass> List;
+        [HideInInspector] public List<EmptyMonoBehClass> ListMono;
 
         private void Awake()
         {
@@ -22,8 +22,8 @@ namespace Spacats.Utils
         {
             TimeTracker.Start("IterationTestGUI Recreate");
             ClearChildren(gameObject.transform);
-            if (_list!=null) _list.Clear();
-            if (_listMono!=null) _listMono.Clear();
+            if (List!=null) List.Clear();
+            if (ListMono!=null) ListMono.Clear();
             Create();
             
             TimeTracker.Finish("IterationTestGUI Recreate");
@@ -32,16 +32,16 @@ namespace Spacats.Utils
 
         private void Create()
         {
-            _list = new List<EmptyClass>();
-            _listMono = new List<EmptyMonoBehClass>();
+            List = new List<EmptyClass>();
+            ListMono = new List<EmptyMonoBehClass>();
             for (int i = 0; i < Iterations; i++)
             {
                 EmptyClass newEmpty = new EmptyClass();
-                _list.Add(newEmpty);
+                List.Add(newEmpty);
 
                 GameObject newGO = new GameObject();
                 EmptyMonoBehClass newMonoBeh = newGO.AddComponent<EmptyMonoBehClass>();
-                _listMono.Add(newMonoBeh);
+                ListMono.Add(newMonoBeh);
                 newMonoBeh.gameObject.transform.parent = gameObject.transform;
             }
 
@@ -54,7 +54,7 @@ namespace Spacats.Utils
                 default: return base.GetButtonLabel(index);
                 case 0:
                     if (!GUILogViewer.Instance.LoggingEnabled) return "Logging Disabled";
-                    return GUILogViewer.Instance.IsOpened ? "Hide Log" : "Show Log";
+                    return GUILogViewer.Instance.IsOpened ? "Hide \nLog" : "Show \nLog";
                 case 1: return "Recreate";
                 case 2: return "Cycle For";
                 case 3: return "Cycle For \nClass";
@@ -135,7 +135,7 @@ namespace Spacats.Utils
             TimeTracker.Start("LaunchCycleForClass " + Iterations);
 
             int counter = 0;
-            for (int i = 0; i < _list.Count; i++)
+            for (int i = 0; i < List.Count; i++)
             {
                 counter += i & 1;
             }
@@ -148,7 +148,7 @@ namespace Spacats.Utils
             TimeTracker.Start("LaunchCycleForClassMono " + Iterations);
 
             int counter = 0;
-            for (int i = 0; i < _listMono.Count; i++)
+            for (int i = 0; i < ListMono.Count; i++)
             {
                 counter += i & 1;
             }
@@ -161,7 +161,7 @@ namespace Spacats.Utils
             TimeTracker.Start("LaunchForeachClass " + Iterations);
             int counter = 0;
             int tmp = 0;
-            foreach (EmptyClass entry in _list)
+            foreach (EmptyClass entry in List)
             {
                 tmp++;
                 counter += tmp & 1;
@@ -175,7 +175,7 @@ namespace Spacats.Utils
             TimeTracker.Start("LaunchForeachMonoBeh " + Iterations);
             int counter = 0;
             int tmp = 0;
-            foreach (EmptyMonoBehClass entry in _listMono)
+            foreach (EmptyMonoBehClass entry in ListMono)
             {
                 tmp++;
                 counter += tmp & 1;
@@ -189,7 +189,7 @@ namespace Spacats.Utils
             TimeTracker.Start("LaunchForeachClassMethod " + Iterations);
             int counter = 0;
             int tmp = 0;
-            foreach (EmptyClass entry in _list)
+            foreach (EmptyClass entry in List)
             {
                 tmp++;
                 counter += tmp & 1;
@@ -204,7 +204,7 @@ namespace Spacats.Utils
             TimeTracker.Start("LaunchForeachMonoBehMethod " + Iterations);
             int counter = 0;
             int tmp = 0;
-            foreach (EmptyMonoBehClass entry in _listMono)
+            foreach (EmptyMonoBehClass entry in ListMono)
             {
                 tmp++;
                 counter += tmp & 1;
@@ -219,10 +219,10 @@ namespace Spacats.Utils
             TimeTracker.Start("LaunchCycleForClassMonoMethod " + Iterations);
 
             int counter = 0;
-            for (int i = 0; i < _listMono.Count; i++)
+            for (int i = 0; i < ListMono.Count; i++)
             {
                 counter += i & 1;
-                _listMono[i].SomeMethod(counter);
+                ListMono[i].SomeMethod(counter);
             }
 
             TimeTracker.Finish("LaunchCycleForClassMonoMethod " + Iterations);
@@ -233,10 +233,10 @@ namespace Spacats.Utils
             TimeTracker.Start("LaunchCycleForClassMonoMethod2 " + Iterations);
 
             int counter = 0;
-            for (int i = 0; i < _listMono.Count; i++)
+            for (int i = 0; i < ListMono.Count; i++)
             {
                 counter += i & 1;
-                _listMono[i].Value = counter;//faster then calling a SomeMethod about 0.1ms per 100k calls
+                ListMono[i].Value = counter;//faster then calling a SomeMethod about 0.1ms per 100k calls
             }
 
             TimeTracker.Finish("LaunchCycleForClassMonoMethod2 " + Iterations);
@@ -246,12 +246,12 @@ namespace Spacats.Utils
         {
             TimeTracker.Start("BEST_PRACTICE_LaunchCycleForClassMonoMethod " + Iterations);
 
-            int count = _listMono.Count;
+            int count = ListMono.Count;
             int counter = 0;
             for (int i = 0; i < count; i++)
             {
                 counter += i & 1;
-                _listMono[i].SomeMethod(counter);
+                ListMono[i].SomeMethod(counter);
             }
 
             TimeTracker.Finish("BEST_PRACTICE_LaunchCycleForClassMonoMethod " + Iterations);

@@ -2,11 +2,13 @@ using UnityEngine;
 
 namespace Spacats.Utils
 {
+    [ExecuteInEditMode]
     public class GUIButtons : MonoBehaviour
     {
         [Header("GUIButtons settings")]
         public bool PerformLogic = true;
-
+        public bool ExecuteInEditor = true;
+        
         [Range(1, 20)]
         [SerializeField]
         private int _buttonCount = 3;
@@ -14,6 +16,10 @@ namespace Spacats.Utils
         [Range(0f, 1f)]
         [SerializeField]
         private float _buttonHeightPercent = 0.08f;
+        
+        [Range(0f, 1f)]
+        [SerializeField]
+        private float _buttonBottomPercent = 1f;
 
         [Range(1, 10)]
         [SerializeField]
@@ -32,12 +38,14 @@ namespace Spacats.Utils
         private void OnGUI()
         {
             if (!PerformLogic) return;
+            if (!Application.isPlaying && !ExecuteInEditor) return;
+            
             if (_buttonCount <= 0) return;
 
             float buttonHeight = Screen.height * _buttonHeightPercent;
             float totalSpacing = _buttonSpacing * (_buttonCount + 1);
             float buttonWidth = (Screen.width - totalSpacing) / _buttonCount;
-            float y = Screen.height - buttonHeight - _buttonSpacing;
+            float y = Screen.height*_buttonBottomPercent - buttonHeight - _buttonSpacing;
 
             GUI.skin.button.fontSize = Mathf.RoundToInt(buttonHeight * _fontScale);
 
