@@ -50,6 +50,11 @@ namespace Spacats.Utils
 
         public void GenerateImmediate()
         {
+            CreateInstant(ImmediateSize);
+        }
+
+        public void CreateInstant(int size)
+        {
             if (Parent == null)
             {
                 Debug.LogError("GridObjectCreator Parent==null");
@@ -61,22 +66,22 @@ namespace Spacats.Utils
                 Debug.LogWarning("Prefab not assigned", this);
                 return;
             }
-
             Clear();
-
+            
             Debug.Log("Trying to instantiate: " + ImmediateSize* ImmediateSize + " objects");
             TimeTracker.Start("PlaneGridObjectCreator");
 
-            for (int x = 0; x < ImmediateSize; x++)
+            for (int x = 0; x < size; x++)
             {
-                for (int z = 0; z < ImmediateSize; z++)
+                for (int z = 0; z < size; z++)
                 {
-                    InstantiateAtGridPoint(x,z, ImmediateSize);
+                    InstantiateAtGridPoint(x,z, size);
                 }
             }
 
             TimeTracker.Finish("PlaneGridObjectCreator", true);
         }
+
         private void InstantiateAtGridPoint(int x, int z, int size)
         {
             float chance = Random.Range(0f, 1f);
