@@ -4,6 +4,7 @@ namespace Spacats.Utils
 {
     public class PlaneGridObjectCreator : MonoBehaviour
     {
+        [Range(0f,1f)]public float Chance = 1f;
         [Min(1)] public int ImmediateSize = 10;
         [Min(1)] public int PlaymodeSize = 10;
         [Min(0f)] public float Gap;
@@ -38,7 +39,7 @@ namespace Spacats.Utils
             {
                 for (int z = 0; z < PlaymodeSize; z++)
                 {
-                    InstantiateAtGridPoint(x, z);
+                    InstantiateAtGridPoint(x, z, PlaymodeSize);
                 }
 
                 if (IEnumeratorCreation) yield return new WaitForSeconds(0.0f);
@@ -70,17 +71,19 @@ namespace Spacats.Utils
             {
                 for (int z = 0; z < ImmediateSize; z++)
                 {
-                    InstantiateAtGridPoint(x,z);
+                    InstantiateAtGridPoint(x,z, ImmediateSize);
                 }
             }
 
             TimeTracker.Finish("PlaneGridObjectCreator", true);
         }
-        private void InstantiateAtGridPoint(int x, int z)
+        private void InstantiateAtGridPoint(int x, int z, int size)
         {
-            float half = (PlaymodeSize - 1) * Gap * 0.5f;
-
-            if (!Application.isPlaying) half = (ImmediateSize - 1) * Gap * 0.5f;
+            float chance = Random.Range(0f, 1f);
+            
+            if (Chance<chance) return;
+            
+            float half = (size - 1) * Gap * 0.5f;
 
             Vector3 localPos = new Vector3(x * Gap - half, 0f, z * Gap - half);
             Vector3 localEulers = new Vector3(Random.Range(MinEulers.x, MaxEulers.x), 
