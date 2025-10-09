@@ -154,7 +154,7 @@ MonoBehaviour:
   UniqueTag: 
   ExecuteInEditor: 0
   ShowLogs: 0
-  ShowControllerLogs: 0
+  ShowCLogs: 0
   PersistsAtScenes: []
 --- !u!4 &336219667
 Transform:
@@ -202,13 +202,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AlwaysOnTop: 1
   ShowLogs: 0
-  ShowSingletonLogs: 0
+  ShowSLogs: 0
   _controllers:
-  - {fileID: 336219666}
   - {fileID: 520325641}
-  - {fileID: 1573203292}
-  - {fileID: 1695338156}
   - {fileID: 1835266719}
+  - {fileID: 1695338156}
+  - {fileID: 1573203292}
+  - {fileID: 336219666}
 --- !u!4 &371722503
 Transform:
   m_ObjectHideFlags: 0
@@ -261,7 +261,7 @@ MonoBehaviour:
   UniqueTag: 
   ExecuteInEditor: 1
   ShowLogs: 0
-  ShowControllerLogs: 0
+  ShowCLogs: 0
   PersistsAtScenes: []
   PerformMeasurements: 1
 --- !u!4 &520325642
@@ -395,7 +395,7 @@ MonoBehaviour:
   UniqueTag: 
   ExecuteInEditor: 1
   ShowLogs: 0
-  ShowControllerLogs: 0
+  ShowCLogs: 0
   PersistsAtScenes: []
   PosX: 0.043
   PosY: 0.032
@@ -450,7 +450,7 @@ MonoBehaviour:
   UniqueTag: 
   ExecuteInEditor: 0
   ShowLogs: 0
-  ShowControllerLogs: 0
+  ShowCLogs: 0
   PersistsAtScenes: []
   _topPercent: 0
   _bottomPercent: 0.1
@@ -502,8 +502,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PerformLogic: 1
+  ExecuteInEditor: 1
   _buttonCount: 2
   _buttonHeightPercent: 0.08
+  _buttonBottomPercent: 1
   _buttonSpacing: 5
   _fontScale: 0.4
   TweensCount: 1000
@@ -651,14 +653,16 @@ MonoBehaviour:
   UniqueTag: 
   ExecuteInEditor: 1
   ShowLogs: 0
-  ShowControllerLogs: 0
+  ShowCLogs: 0
   PersistsAtScenes: []
   PosX: 0.01
-  PosY: 0.824
+  PosY: 0.783
   FontSize: 0.0298
   FontColor: {r: 0, g: 0, b: 0, a: 1}
   LogicEnabled: 1
-  Message: sfdgdsfgsfdtdergter
+  _mainMessage: 'Count: 0; ms: 0,0021'
+  _fullString: 'Count: 0; ms: 0,0021'
+  _messageLines: []
 --- !u!4 &1835266720
 Transform:
   m_ObjectHideFlags: 0

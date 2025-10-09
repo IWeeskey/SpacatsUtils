@@ -26,8 +26,16 @@ namespace Spacats.Utils
         [Header("Logic Settings")]
         public bool LogicEnabled = true;
 
-        public string Message = "";
-
+        [SerializeField]private string _mainMessage = "";
+        [SerializeField]private string _fullString = "";
+        [SerializeField]private List<string> _messageLines = new List<string>(); 
+        
+        public string Message
+        {
+            get { return _mainMessage; }
+            set { _mainMessage = value; }
+        }
+        
         protected override void COnRegister()
         {
             base.COnRegister();
@@ -37,9 +45,9 @@ namespace Spacats.Utils
         private void OnGUI()
         {
             if (!ExecuteInEditor && !Application.isPlaying) return;
-
             if (!LogicEnabled) return;
-
+            
+            FormFullString();
             float screenWidth = Screen.width;
             float screenHeight = Screen.height;
 
@@ -53,10 +61,34 @@ namespace Spacats.Utils
 
             float x = PosX * screenWidth;
             float y = PosY * screenHeight;
-
+            float width = 2000f;
+            float height = mainStyle.CalcHeight(new GUIContent(_fullString), width);
+            
             GUI.color = FontColor;
 
-            GUI.Label(new Rect(x, y, 2000, 100), Message, mainStyle);
+            
+            GUI.Label(new Rect(x, y, width, height), _fullString, mainStyle);
+        }
+        
+        private void FormFullString()
+        {
+            _fullString = _mainMessage;
+
+            for (int i = 0; i < _messageLines.Count; i++)
+            {
+                string value = _messageLines[i];
+                _fullString +="\n" + i + ":" + value;
+            }
+        }
+
+        public void SetMessageLine(string value, int index)
+        {
+            int startCount = _messageLines.Count;
+            for (int i = startCount; i <= index; i++)
+            {
+                _messageLines.Add("");
+            }
+            _messageLines[index] = value;
         }
     }
 }

@@ -46,8 +46,12 @@ namespace Spacats.Utils
             SerializedProperty fontColor = serializedObject.FindProperty("FontColor");
             EditorGUILayout.PropertyField(fontColor);
 
-            SerializedProperty message = serializedObject.FindProperty("Message");
-            EditorGUILayout.PropertyField(message);
+            SerializedProperty mainMessage = serializedObject.FindProperty("_mainMessage");
+            EditorGUILayout.PropertyField(mainMessage);
+            
+            SerializedProperty messageLines = serializedObject.FindProperty("_messageLines");
+            EditorGUILayout.PropertyField(messageLines);
+            
         }
     }
 }
