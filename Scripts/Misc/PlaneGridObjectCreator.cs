@@ -68,7 +68,7 @@ namespace Spacats.Utils
             }
             Clear();
             
-            Debug.Log("Trying to instantiate: " + ImmediateSize* ImmediateSize + " objects");
+            Debug.Log("Trying to instantiate: " + size * size + " objects");
             TimeTracker.Start("PlaneGridObjectCreator");
 
             for (int x = 0; x < size; x++)
