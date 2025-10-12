@@ -27,7 +27,7 @@ namespace Spacats.Utils
             base.SOnDestroy();
         }
 
-        protected override void SSharedUpdate()
+        protected override void SSharedUpdate(bool isGuiCall = false)
         {
             base.SSharedUpdate();
         }

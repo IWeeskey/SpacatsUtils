@@ -56,7 +56,7 @@ namespace Spacats.Utils
         /// <summary>
         /// Triggers every update + every scene gui. So it can work smoothly while in editor.
         /// </summary>
-        public virtual void CSharedUpdate() { }
+        public virtual void CSharedUpdate(bool isGuiCall = false) { }
 
 #if UNITY_EDITOR
         public virtual void COnSceneGUI(SceneView sceneView) { }

@@ -29,7 +29,7 @@ namespace Spacats.Utils
         private float _avg1Timer = 0f;
         private float _avg1Result = 0f;
 
-        public override void CSharedUpdate()
+        public override void CSharedUpdate(bool isGuiCall = false)
         {
             base.CSharedUpdate();
             DoLogic();

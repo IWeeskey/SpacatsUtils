@@ -110,7 +110,7 @@ namespace Spacats.Utils
             _activeCount = 0;
         }
 
-        public override void CSharedUpdate()
+        public override void CSharedUpdate(bool isGuiCall = false)
         {
             base.CSharedUpdate();
             UpdateLogic();

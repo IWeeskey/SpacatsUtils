@@ -35,7 +35,7 @@ namespace Spacats.Utils
         /// <summary>
         /// Triggers every update + every scene gui. So it can work smoothly while in editor.
         /// </summary>
-        protected virtual void SSharedUpdate() { }
+        protected virtual void SSharedUpdate(bool isGuiCall = false) { }
 
         public static T Instance
         {
@@ -122,7 +122,7 @@ namespace Spacats.Utils
         private void DuringSceneGui(SceneView sView)
         {
             SingletonOnSceneGUI(sView);
-            SSharedUpdate();
+            SSharedUpdate(true);
         }
 #endif
 
@@ -140,7 +140,7 @@ namespace Spacats.Utils
         {
             if (!IsInstance) return;
             SUpdate();
-            SSharedUpdate();
+            SSharedUpdate(false);
         }
 
         private void LateUpdate()

@@ -46,7 +46,7 @@ namespace Spacats.Utils
 			_instance = this;
 		}
 
-		public override void CSharedUpdate()
+		public override void CSharedUpdate(bool isGuiCall = false)
 		{
 			if (!PerformLogic) return;
 			

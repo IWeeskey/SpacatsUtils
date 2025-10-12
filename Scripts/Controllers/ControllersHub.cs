@@ -70,7 +70,6 @@ namespace Spacats.Utils
         protected override void SOnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             base.SOnSceneLoaded(scene, mode);
-            if (_controllers.Count == 0) return;
 
             for (int i = _controllers.Count - 1; i>=0; i--)
             {
@@ -83,8 +82,9 @@ namespace Spacats.Utils
         protected override void SUpdate()
         {
             base.SUpdate();
-            foreach (Controller controller in _controllers)
+            for (int i = _controllers.Count - 1; i>=0; i--)
             {
+                Controller controller = _controllers[i];
                 if (controller == null) continue;
                 if (!controller.ExecuteInEditor && !Application.isPlaying)
                 {
@@ -98,9 +98,10 @@ namespace Spacats.Utils
         {
             base.SLateUpdate();
 
-            foreach (Controller controller in _controllers)
+            for (int i = _controllers.Count - 1; i>=0; i--)
             {
-                if (controller == null) continue;
+                Controller controller = _controllers[i];
+                if (controller ==null) continue;
                 if (!controller.ExecuteInEditor && !Application.isPlaying)
                 {
                     continue;
@@ -115,34 +116,37 @@ namespace Spacats.Utils
         {
             base.SingletonOnSceneGUI(sceneView);
 
-            foreach (Controller controller in _controllers)
+            for (int i = _controllers.Count - 1; i>=0; i--)
             {
+                Controller controller = _controllers[i];
                 if (controller == null) continue;
                 controller.COnSceneGUI(sceneView);
             }
         }
 #endif
 
-        protected override void SSharedUpdate()
+        protected override void SSharedUpdate(bool isGuiCall = false)
         {
-            base.SSharedUpdate();
+            base.SSharedUpdate(isGuiCall);
 
-            foreach (Controller controller in _controllers)
+            for (int i = _controllers.Count - 1; i>=0; i--)
             {
+                Controller controller = _controllers[i];
                 if (controller == null) continue;
                 if (!controller.ExecuteInEditor && !Application.isPlaying)
                 {
                     continue;
                 }
-                controller.CSharedUpdate();
+                controller.CSharedUpdate(isGuiCall);
             }
         }
         #endregion
 
         private void HandleDestroyLogic()
         {
-            foreach (Controller controller in _controllers)
+            for (int i = _controllers.Count - 1; i>=0; i--)
             {
+                Controller controller = _controllers[i];
                 if (controller == null) continue;
                 controller.transform.parent = null;
                 controller.enabled = true;

@@ -17,7 +17,7 @@ namespace Spacats.Utils
             base.COnDisable();
         }
 
-        public override void CSharedUpdate()
+        public override void CSharedUpdate(bool isGuiCall = false)
         {
             base.CSharedUpdate();
             RandomValue = Random.Range(0,100);
