@@ -19,7 +19,7 @@ namespace Spacats.Utils
         private int _lastStepIndex;
 
         public bool IsBroken => _isBroken;
-        public bool IsStarted => _preStarted || _started;
+        public bool IsStarted => _preStarted;
         public bool IsRunning => IsStarted && !IsComplete;
         public bool ApplyGlobalPause { get; set; }
         public bool IsComplete { get; private set; }
@@ -58,12 +58,14 @@ namespace Spacats.Utils
         {
             bool alreadyRunning = IsRunning;
             Reset();
+            _preStarted = true;
             if (!alreadyRunning) MonoTweenController.Instance.StartSingle(this);
         }
 
         public void Break()
         {
             _isBroken = true;
+            _preStarted = false;
         }
 
         public void Reset()
@@ -94,6 +96,7 @@ namespace Spacats.Utils
             if (IsComplete || _isBroken)
             {
                 IsComplete = true;
+                _preStarted = false;
                 return;
             }
 
@@ -103,7 +106,6 @@ namespace Spacats.Utils
 
             if (!_started)
             {
-                _preStarted = true;
                 _delayTimer += deltaTime;
 
                 if (_delayTimer < Delay) return;
