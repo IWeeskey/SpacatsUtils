@@ -17,7 +17,6 @@ namespace Spacats.Utils
         {
             get
             {
-                if (_instance == null) Debug.LogError("MonoTweenController is not initialized yet!");
                 return _instance;
             }
         }
@@ -172,5 +171,13 @@ namespace Spacats.Utils
                 else tweens[i].SelfPauseOFF();
             }
         }
+
+        #region static blank units
+        public static MonoTweenUnit GetBlankWaitFor(float waitTime, System.Action callback, bool applyGlobalPause = false)
+        {
+            MonoTweenUnit newUnit = new MonoTweenUnit(0f, waitTime, null, null, callback, applyGlobalPause);
+            return newUnit;
+        }
+        #endregion
     }
 }

@@ -7,6 +7,7 @@ namespace Spacats.Utils
     {
         private bool _isBroken;
         private bool _selfPaused;
+        private bool _preStarted;
         private bool _started;
 
         [SerializeField] private float _time;
@@ -18,6 +19,8 @@ namespace Spacats.Utils
         private int _lastStepIndex;
 
         public bool IsBroken => _isBroken;
+        public bool IsStarted => _preStarted || _started;
+        public bool IsRunning => IsStarted && !IsComplete;
         public bool ApplyGlobalPause { get; set; }
         public bool IsComplete { get; private set; }
         public float Delay { get; set; }
@@ -99,6 +102,7 @@ namespace Spacats.Utils
 
             if (!_started)
             {
+                _preStarted = true;
                 _delayTimer += deltaTime;
 
                 if (_delayTimer < Delay) return;
