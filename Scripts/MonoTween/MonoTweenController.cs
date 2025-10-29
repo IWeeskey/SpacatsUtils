@@ -26,6 +26,7 @@ namespace Spacats.Utils
         public int ActiveTweensCount => _activeCount;
         public int TweensListCount => _tweens.Count;
         public bool PerformMeasurements = false;
+        public bool SkipWhileEditor = true;
         public double UpdateTimeMS => _updateTimeMS;
         public string UpdateTimeString => _updateTimeString;
 
@@ -112,6 +113,12 @@ namespace Spacats.Utils
         public override void CSharedUpdate(bool isGuiCall = false)
         {
             base.CSharedUpdate();
+            
+#if UNITY_EDITOR
+            if (Application.isPlaying && SkipWhileEditor && isGuiCall) return;
+            if (!Application.isPlaying && SkipWhileEditor) return;
+#endif
+            
             UpdateLogic();
         }
 

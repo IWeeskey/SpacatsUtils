@@ -65,6 +65,9 @@ namespace Spacats.Utils
 
             SerializedProperty performMeasurements = serializedObject.FindProperty("PerformMeasurements");
             EditorGUILayout.PropertyField(performMeasurements);
+            
+            SerializedProperty skipWhileEditor = serializedObject.FindProperty("SkipWhileEditor");
+            EditorGUILayout.PropertyField(skipWhileEditor);
         }
 
         private void TryDrawMeasurementsInfo()
