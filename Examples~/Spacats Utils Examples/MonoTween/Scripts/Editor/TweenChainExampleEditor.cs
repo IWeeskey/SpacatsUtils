@@ -14,7 +14,7 @@ namespace Spacats.Utils
 
             DrawDefaultInspector();
 
-            if (GUILayout.Button("Start"))
+            if (GUILayout.Button("Start Chain"))
             {
                 targetScript.StartTweens();
             }
@@ -24,7 +24,7 @@ namespace Spacats.Utils
                 targetScript.SwitchPauseTweens();
             }
 
-            if (GUILayout.Button("Stop"))
+            if (GUILayout.Button("Stop Chain"))
             {
                 targetScript.StopTweens();
             }

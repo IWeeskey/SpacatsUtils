@@ -128,6 +128,7 @@ namespace Spacats.Utils
         public void StartChain(int repeatCount, params MonoTweenUnit[] tweens)
         {
             if (tweens.Length == 0) return;
+            StopChain(tweens);
             tweens[0].ChainIndex = 0;
 
             for (int i = 0; i < tweens.Length; i++)

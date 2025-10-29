@@ -56,8 +56,9 @@ namespace Spacats.Utils
 
         public void Start()
         {
+            bool alreadyRunning = IsRunning;
             Reset();
-            MonoTweenController.Instance.StartSingle(this);
+            if (!alreadyRunning) MonoTweenController.Instance.StartSingle(this);
         }
 
         public void Break()
