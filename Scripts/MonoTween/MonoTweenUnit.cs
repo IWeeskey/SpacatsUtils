@@ -65,7 +65,6 @@ namespace Spacats.Utils
         public void Break()
         {
             _isBroken = true;
-            _preStarted = false;
         }
 
         public void Reset()
