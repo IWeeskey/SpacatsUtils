@@ -13,12 +13,20 @@ namespace Spacats.Utils
     [DefaultExecutionOrder(-20)]
     public class ControllersHub : Singleton<ControllersHub>
     {
+        public delegate void CHubSceneInit();
+        public static event CHubSceneInit OnCHubSceneInit;
+        
         [SerializeField] private List<Controller> _controllers = new List<Controller>();
+
+        private bool _sceneInitScheduled = false;
+        private IEnumerator _sceneInitIEnumerator;
         #region overrides
         protected override void SAwake()
         {
             base.SAwake();
+            _sceneInitScheduled = false;
         }
+        
         protected override void SSetDefaultParameters()
         {
             base.SSetDefaultParameters();
@@ -71,14 +79,32 @@ namespace Spacats.Utils
         {
             base.SOnSceneLoaded(scene, mode);
 
+            if (_sceneInitScheduled) StopCoroutine(_sceneInitIEnumerator);
+            _sceneInitScheduled = true;
+            _sceneInitIEnumerator = BasicIEnumerators.WaitNextFrame(() =>
+            {
+                FinishOnSceneLoaded(scene, mode);
+                _sceneInitScheduled = false;
+            },2);
+            
+            StartCoroutine(_sceneInitIEnumerator);
+        }
+
+
+        private void FinishOnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
             for (int i = _controllers.Count - 1; i>=0; i--)
             {
                 if (_controllers[i] == null) continue;
                 if (!_controllers[i].ExecuteInEditor && !Application.isPlaying) continue;
                 _controllers[i].ExternalOnSceneLoaded(scene, mode);
             }
+            
+            OnCHubSceneInit?.Invoke();
+            
+            TryToShowLog("OnCHubSceneInit", LogType.Log, false);
         }
-
+        
         protected override void SUpdate()
         {
             base.SUpdate();

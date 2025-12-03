@@ -134,6 +134,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: '[SpaCats] ExampleController2'
       objectReference: {fileID: 0}
+    - target: {fileID: 7506513633234546082, guid: 1fe927ed8b7735646b3e812acd4db23e, type: 3}
+      propertyPath: ShowLogs
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7506513633234546082, guid: 1fe927ed8b7735646b3e812acd4db23e, type: 3}
+      propertyPath: ShowCLogs
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7506513633234546082, guid: 1fe927ed8b7735646b3e812acd4db23e, type: 3}
+      propertyPath: RandomValue
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 8567274354732687308, guid: 1fe927ed8b7735646b3e812acd4db23e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -206,6 +218,7 @@ GameObject:
   - component: {fileID: 829147705}
   - component: {fileID: 829147704}
   - component: {fileID: 829147703}
+  - component: {fileID: 829147706}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -287,6 +300,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &829147706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 829147702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afafc1e847d888a479c02fa3019ee7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PerformLogic: 1
+  ExecuteInEditor: 0
+  _buttonCount: 1
+  _buttonHeightPercent: 0.08
+  _buttonBottomPercent: 1
+  _buttonSpacing: 5
+  _fontScale: 0.4
+  SceneToLoad: ControllersHubScene 2
 --- !u!1 &1074950358
 GameObject:
   m_ObjectHideFlags: 0
@@ -317,9 +350,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AlwaysOnTop: 1
-  ShowLogs: 1
-  ShowSingletonLogs: 1
+  ShowLogs: 0
+  ShowSLogs: 0
   _controllers:
+  - {fileID: 1825125288}
   - {fileID: 398013238}
   - {fileID: 2085257968}
 --- !u!4 &1074950360
@@ -337,7 +371,57 @@ Transform:
   m_Children:
   - {fileID: 2085257969}
   - {fileID: 398013239}
+  - {fileID: 1825125289}
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1825125287
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1825125289}
+  - component: {fileID: 1825125288}
+  m_Layer: 0
+  m_Name: '[SpaCats] SceneController '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1825125288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1825125287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f458a373c6270e64abdb98c91f214dd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UniqueTag: 
+  ExecuteInEditor: 0
+  ShowLogs: 0
+  ShowCLogs: 0
+  PersistsAtScenes: []
+--- !u!4 &1825125289
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1825125287}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1074950360}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2085257967
 PrefabInstance:
@@ -386,6 +470,18 @@ PrefabInstance:
     - target: {fileID: 4718847783490002175, guid: 958a5d901f066f442a5ccf3de00e0e28, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7382031054824634239, guid: 958a5d901f066f442a5ccf3de00e0e28, type: 3}
+      propertyPath: ShowLogs
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7382031054824634239, guid: 958a5d901f066f442a5ccf3de00e0e28, type: 3}
+      propertyPath: ShowCLogs
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7382031054824634239, guid: 958a5d901f066f442a5ccf3de00e0e28, type: 3}
+      propertyPath: RandomValue
+      value: 61
       objectReference: {fileID: 0}
     - target: {fileID: 8175575172416694159, guid: 958a5d901f066f442a5ccf3de00e0e28, type: 3}
       propertyPath: m_Name

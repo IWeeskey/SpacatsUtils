@@ -32,6 +32,10 @@ namespace Spacats.Utils
 
         protected bool _applicationIsQuitting = false;
         protected bool _registered = false;
+
+        public delegate void ControllerRegistered (Controller controller);
+        public static event ControllerRegistered OnControllerRegistered;
+        
         protected virtual void CAwake() { TryToShowLog("Awake", LogType.Log, true); }
         protected virtual void COnEnable() { TryToShowLog("OnEnable", LogType.Log, true); }
         protected virtual void COnDisable() { TryToShowLog("OnDisable", LogType.Log, true); }
@@ -94,6 +98,7 @@ namespace Spacats.Utils
                 return;
             }
             _registered = true;
+            OnControllerRegistered?.Invoke(this);
             COnRegister();
         }
 
