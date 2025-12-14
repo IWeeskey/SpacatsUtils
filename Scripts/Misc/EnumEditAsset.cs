@@ -56,10 +56,13 @@ namespace Spacats.Utils
                 return;
             }
 
-            // Ищем определение enum TagEnum и собираем строки внутри его фигурных скобок
+            // Ищем определение enum по имени из файла и собираем строки внутри его фигурных скобок
             bool foundEnum = false;
             bool startedBlock = false;
             int braceDepth = 0;
+
+            // Имя енума предполагаем как имя файла скрипта (Unity MonoScript.name)
+            string enumName = _enumScriptFile != null ? _enumScriptFile.name : null;
 
             for (int i = 0; i < allLines.Length; i++)
             {
@@ -67,7 +70,7 @@ namespace Spacats.Utils
                 if (!foundEnum)
                 {
                     // Ищем строку с объявлением енума
-                    if (line.Contains("enum TagEnum"))
+                    if (!string.IsNullOrEmpty(enumName) && line.Contains("enum " + enumName))
                     {
                         foundEnum = true;
 
@@ -329,11 +332,14 @@ namespace Spacats.Utils
                 return;
             }
 
-            // Находим диапазон строк енума TagEnum: индекс начала тела после '{' и индекс строки с закрывающей '}'
+            // Находим диапазон строк енума: индекс начала тела после '{' и индекс строки с закрывающей '}'
             bool foundEnum = false;
             int braceDepth = 0;
             int enumStartBodyLine = -1; // первая строка после строки с '{' (может быть на той же строке)
             int enumEndBraceLine = -1;  // строка с закрывающей '}' для енума
+
+            // Имя енума предполагаем как имя файла скрипта (Unity MonoScript.name)
+            string enumName = _enumScriptFile != null ? _enumScriptFile.name : null;
 
             // Определяем базовый отступ для элементов енума
             string indent = "        "; // 8 пробелов по текущему стилю файла
@@ -350,7 +356,7 @@ namespace Spacats.Utils
 
                 if (!foundEnum)
                 {
-                    if (line.Contains("enum TagEnum"))
+                    if (!string.IsNullOrEmpty(enumName) && line.Contains("enum " + enumName))
                     {
                         foundEnum = true;
                         // Считаем фигурные скобки, включая текущую строку
@@ -507,7 +513,7 @@ namespace Spacats.Utils
 
             if (!foundEnum || enumStartBodyLine < 0 || enumEndBraceLine < 0)
             {
-                Debug.LogError("[TagEdit] Не удалось найти тело enum TagEnum для редактирования.");
+                Debug.LogError($"[TagEdit] Не удалось найти тело enum {enumName ?? "<unknown>"} для редактирования.");
                 return;
             }
 
