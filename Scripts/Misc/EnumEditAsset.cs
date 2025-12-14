@@ -24,9 +24,6 @@ namespace Spacats.Utils
         // Читает строки внутри enum TagEnum, выводит их в лог и печатает максимальный присвоенный номер
         public void AddToEnum()
         {
-            // Валидируем введённые теги перед любой обработкой
-            ValidateNewTags();
-
             // Временный список строк из енума
             var enumLines = new List<string>();
 
@@ -48,6 +45,9 @@ namespace Spacats.Utils
                 Debug.LogError($"[TagEdit] Файл не найден: {path}");
                 return;
             }
+            
+            // Валидируем введённые теги перед любой обработкой
+            ValidateNewTags();
 
             string[] allLines = File.ReadAllLines(path);
             if (allLines == null || allLines.Length == 0)
@@ -170,13 +170,11 @@ namespace Spacats.Utils
 
         private void AddValidatedTagsToEnum()
         {
-            // Используем уже отвалидированный список _newTagsToAdd
             if (_enumScriptFile == null)
             {
                 Debug.LogError("[TagEdit] Не задан файл скрипта с enum. Укажите _enumScriptFile.");
                 return;
             }
-
             if (NewTagsToAdd == null || NewTagsToAdd.Count == 0)
             {
                 Debug.Log("[TagEdit] Нет новых тегов для добавления. Список пуст.");
@@ -189,7 +187,6 @@ namespace Spacats.Utils
                 Debug.LogError("[TagEdit] Путь к файлу enum пуст. Укажите корректный скрипт.");
                 return;
             }
-
             if (!File.Exists(path))
             {
                 Debug.LogError($"[TagEdit] Файл не найден: {path}");
@@ -203,263 +200,221 @@ namespace Spacats.Utils
                 return;
             }
 
-            // Находим диапазон строк енума: индекс начала тела после '{' и индекс строки с закрывающей '}'
-            bool foundEnum = false;
-            int braceDepth = 0;
-            int enumStartBodyLine = -1; // первая строка после строки с '{' (может быть на той же строке)
-            int enumEndBraceLine = -1;  // строка с закрывающей '}' для енума
-
-            // Имя енума предполагаем как имя файла скрипта (Unity MonoScript.name)
             string enumName = _enumScriptFile != null ? _enumScriptFile.name : null;
+            if (string.IsNullOrEmpty(enumName))
+            {
+                Debug.LogError("[TagEdit] Не удалось определить имя enum по файлу скрипта.");
+                return;
+            }
 
-            // Определяем базовый отступ для элементов енума
-            string indent = "        "; // 8 пробелов по текущему стилю файла
+            // Найти диапазон строк енума
+            if (!FindEnumRange(allLines, enumName, out int enumDeclLine, out int enumEndBraceLine))
+            {
+                Debug.LogError($"[TagEdit] Не удалось найти тело enum {enumName} для редактирования.");
+                return;
+            }
 
-            // Собираем существующие имена и максимальное значение
+            // Собрать информацию о существующих элементах енума
             var existingNames = new List<string>();
             var existingNameToValue = new Dictionary<string, int>();
             var existingValues = new HashSet<int>();
             int maxValue = int.MinValue;
+            CollectEnumInfo(allLines, enumDeclLine, enumEndBraceLine, existingNames, existingNameToValue, existingValues, ref maxValue);
 
-            for (int i = 0; i < allLines.Length; i++)
-            {
-                string line = allLines[i];
-
-                if (!foundEnum)
-                {
-                    if (!string.IsNullOrEmpty(enumName) && line.Contains("enum " + enumName))
-                    {
-                        foundEnum = true;
-                        // Считаем фигурные скобки, включая текущую строку
-                        for (int c = 0; c < line.Length; c++)
-                        {
-                            char ch = line[c];
-                            if (ch == '{')
-                            {
-                                braceDepth++;
-                                if (enumStartBodyLine < 0)
-                                {
-                                    enumStartBodyLine = i + 1; // содержимое начинается со следующей строки
-                                }
-                            }
-                            else if (ch == '}')
-                            {
-                                braceDepth--;
-                                if (braceDepth == 0)
-                                {
-                                    enumEndBraceLine = i;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    continue;
-                }
-
-                // После обнаружения енума, двигаемся по строкам, отслеживая глубину
-                for (int c = 0; c < line.Length; c++)
-                {
-                    char ch = line[c];
-                    if (ch == '{')
-                    {
-                        braceDepth++;
-                        if (enumStartBodyLine < 0)
-                        {
-                            enumStartBodyLine = i + 1;
-                        }
-                    }
-                    else if (ch == '}')
-                    {
-                        braceDepth--;
-                    }
-                }
-
-                if (braceDepth >= 1)
-                {
-                    string trimmed = line.Trim();
-                    if (!string.IsNullOrEmpty(trimmed))
-                    {
-                        if (!trimmed.StartsWith("//"))
-                        {
-                            // Парсим имя до '=' или до запятой
-                            int nameEnd = -1;
-                            for (int k = 0; k < trimmed.Length; k++)
-                            {
-                                char ch = trimmed[k];
-                                if (ch == '=' || ch == ',' || ch == ' ' || ch == '\t')
-                                {
-                                    nameEnd = k - 1;
-                                    break;
-                                }
-                            }
-
-                            string name;
-                            if (nameEnd >= 0)
-                            {
-                                name = trimmed.Substring(0, nameEnd + 1);
-                            }
-                            else
-                            {
-                                // Строка вида "value" без '=' и без запятой на конце
-                                name = trimmed.TrimEnd(',');
-                            }
-
-                            if (!string.IsNullOrEmpty(name))
-                            {
-                                existingNames.Add(name);
-                            }
-
-                            // Ищем максимальное присвоенное число
-                            int eq = trimmed.IndexOf('=');
-                            if (eq >= 0)
-                            {
-                                int numberStart = -1;
-                                int numberEnd = -1;
-                                for (int k = eq + 1; k < trimmed.Length; k++)
-                                {
-                                    char tch = trimmed[k];
-                                    if (numberStart < 0)
-                                    {
-                                        if (tch == '-' || (tch >= '0' && tch <= '9'))
-                                        {
-                                            numberStart = k;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (!(tch >= '0' && tch <= '9'))
-                                        {
-                                            numberEnd = k - 1;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                if (numberStart >= 0 && numberEnd < numberStart)
-                                {
-                                    numberEnd = trimmed.Length - 1;
-                                }
-
-                                if (numberStart >= 0 && numberEnd >= numberStart)
-                                {
-                                    string numStr = trimmed.Substring(numberEnd >= numberStart ? numberStart : numberStart, numberEnd - numberStart + 1);
-                                    int parsed;
-                                    if (int.TryParse(numStr, out parsed))
-                                    {
-                                        if (parsed > maxValue)
-                                        {
-                                            maxValue = parsed;
-                                        }
-
-                                        // Сохраняем маппинг имя->значение и множество существующих значений
-                                        if (!string.IsNullOrEmpty(name))
-                                        {
-                                            if (!existingNameToValue.ContainsKey(name))
-                                            {
-                                                existingNameToValue.Add(name, parsed);
-                                            }
-                                            else
-                                            {
-                                                existingNameToValue[name] = parsed;
-                                            }
-                                        }
-
-                                        if (!existingValues.Contains(parsed))
-                                        {
-                                            existingValues.Add(parsed);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    enumEndBraceLine = i;
-                    break;
-                }
-            }
-
-            if (!foundEnum || enumStartBodyLine < 0 || enumEndBraceLine < 0)
-            {
-                Debug.LogError($"[TagEdit] Не удалось найти тело enum {enumName ?? "<unknown>"} для редактирования.");
-                return;
-            }
-
-            // Формируем список новых имён, которых нет в текущем енума
+            // Отфильтровать только новые имена
             var newNames = new List<string>();
             for (int i = 0; i < NewTagsToAdd.Count; i++)
             {
                 string candidate = NewTagsToAdd[i];
-                if (string.IsNullOrEmpty(candidate))
-                {
-                    continue;
-                }
-
+                if (string.IsNullOrEmpty(candidate)) continue;
                 bool exists = false;
                 for (int j = 0; j < existingNames.Count; j++)
                 {
-                    if (existingNames[j] == candidate)
-                    {
-                        exists = true;
-                        break;
-                    }
+                    if (existingNames[j] == candidate) { exists = true; break; }
                 }
-
-                if (!exists)
-                {
-                    newNames.Add(candidate);
-                }
-                else
-                {
-                    Debug.Log($"[TagEdit] Тег '{candidate}' уже существует в enum — пропущен.");
-                }
+                if (!exists) newNames.Add(candidate);
+                else Debug.Log($"[TagEdit] Тег '{candidate}' уже существует в enum — пропущен.");
             }
-
             if (newNames.Count == 0)
             {
                 Debug.Log("[TagEdit] Нет новых уникальных тегов для добавления.");
                 return;
             }
 
-            // Генерируем значения через стабильный хеш от имени и проверяем коллизии
+            var toInsert = BuildInsertLines(newNames, existingValues, existingNameToValue);
+            if (toInsert.Count == 0)
+            {
+                Debug.LogWarning("[TagEdit] Новые теги не добавлены из-за коллизий или дубликатов.");
+                return;
+            }
+
+            // Вставить строки перед закрывающей скобкой енума
+            InsertBeforeClosingBrace(path, allLines, enumEndBraceLine, toInsert);
+        }
+
+        private bool FindEnumRange(string[] allLines, string enumName, out int enumDeclLine, out int enumEndBraceLine)
+        {
+            enumDeclLine = -1;
+            enumEndBraceLine = -1;
+            if (allLines == null || allLines.Length == 0 || string.IsNullOrEmpty(enumName)) return false;
+
+            for (int i = 0; i < allLines.Length; i++)
+            {
+                string line = allLines[i];
+                if (!line.Contains("enum " + enumName)) continue;
+
+                enumDeclLine = i;
+                int depth = 0;
+                bool started = false;
+
+                // Считаем скобки начиная с найденной строки до конца файла
+                for (int j = i; j < allLines.Length; j++)
+                {
+                    string l = allLines[j];
+                    for (int c = 0; c < l.Length; c++)
+                    {
+                        char ch = l[c];
+                        if (ch == '{') { depth++; started = true; }
+                        else if (ch == '}') { depth--; }
+                    }
+
+                    if (started && depth == 0)
+                    {
+                        enumEndBraceLine = j;
+                        return true;
+                    }
+                }
+
+                // Если дошли сюда — не нашли закрывающую скобку
+                return false;
+            }
+
+            return false;
+        }
+
+        private void CollectEnumInfo(string[] allLines,
+                                     int enumDeclLine,
+                                     int enumEndBraceLine,
+                                     List<string> existingNames,
+                                     Dictionary<string, int> existingNameToValue,
+                                     HashSet<int> existingValues,
+                                     ref int maxValue)
+        {
+            int depth = 0;
+            bool started = false;
+
+            for (int i = enumDeclLine; i <= enumEndBraceLine; i++)
+            {
+                string line = allLines[i];
+                for (int c = 0; c < line.Length; c++)
+                {
+                    char ch = line[c];
+                    if (ch == '{') { depth++; started = true; }
+                    else if (ch == '}') { depth--; }
+                }
+
+                if (!started || depth < 1) continue;
+
+                string trimmed = line.Trim();
+                if (string.IsNullOrEmpty(trimmed)) continue;
+                if (trimmed.StartsWith("//")) continue;
+
+                if (TryParseEnumMember(trimmed, out string name, out int? value))
+                {
+                    if (!string.IsNullOrEmpty(name)) existingNames.Add(name);
+
+                    if (!value.HasValue) continue;
+                    
+                    int v = value.Value;
+                    if (v > maxValue) maxValue = v;
+                    if (!string.IsNullOrEmpty(name)) existingNameToValue[name] = v;
+                    existingValues.Add(v);
+                }
+            }
+        }
+
+        private bool TryParseEnumMember(string trimmed, out string name, out int? value)
+        {
+            name = null;
+            value = null;
+            if (string.IsNullOrEmpty(trimmed)) return false;
+
+            // Имя — до '=', ',', пробела или таба
+            int nameEnd = -1;
+            for (int k = 0; k < trimmed.Length; k++)
+            {
+                char ch = trimmed[k];
+                if (ch == '=' || ch == ',' || ch == ' ' || ch == '\t')
+                {
+                    nameEnd = k - 1;
+                    break;
+                }
+            }
+
+            if (nameEnd >= 0) name = trimmed.Substring(0, nameEnd + 1);
+            else name = trimmed.TrimEnd(',');
+
+            // Значение справа от '='
+            int eq = trimmed.IndexOf('=');
+            if (eq >= 0)
+            {
+                int start = -1;
+                int end = -1;
+                for (int i = eq + 1; i < trimmed.Length; i++)
+                {
+                    char ch = trimmed[i];
+                    if (start < 0)
+                    {
+                        if (ch == '-' || (ch >= '0' && ch <= '9')) start = i;
+                    }
+                    else
+                    {
+                        if (!(ch >= '0' && ch <= '9')) { end = i - 1; break; }
+                    }
+                }
+                if (start >= 0 && end < start) end = trimmed.Length - 1;
+                if (start >= 0 && end >= start)
+                {
+                    if (int.TryParse(trimmed.Substring(start, end - start + 1), out int parsed))
+                    {
+                        value = parsed;
+                    }
+                }
+            }
+
+            return !string.IsNullOrEmpty(name);
+        }
+
+        private List<string> BuildInsertLines(List<string> newNames,
+                                              HashSet<int> existingValues,
+                                              Dictionary<string, int> existingNameToValue)
+        {
             var toInsert = new List<string>(newNames.Count);
             var newGeneratedValues = new HashSet<int>();
+            string indent = "        ";
+
             for (int i = 0; i < newNames.Count; i++)
             {
                 string name = newNames[i];
                 int id = Hash32(name);
 
-                // Проверка коллизии с уже существующими значениями
                 if (existingValues.Contains(id))
                 {
-                    // Если такой же id уже закреплён за этим же именем — значит тег уже был, но мы сюда не попали, т.к. newNames не содержит существующие.
-                    // Следовательно, это коллизия с другим именем — пропускаем и логируем ошибку.
-                    string boundName;
-                    if (existingNameToValue.TryGetValue(name, out var existingForSameName) && existingForSameName == id)
+                    if (existingNameToValue.TryGetValue(name, out var same) && same == id)
                     {
                         Debug.Log($"[TagEdit] Тег '{name}' уже присутствует c тем же значением — пропущен.");
                         continue;
                     }
 
-                    // Найдём имя, которому принадлежит этот id (для сообщения), если получится
-                    boundName = null;
+                    string boundName = null;
                     foreach (var kv in existingNameToValue)
                     {
-                        if (kv.Value == id)
-                        {
-                            boundName = kv.Key;
-                            break;
-                        }
+                        if (kv.Value == id) { boundName = kv.Key; break; }
                     }
-
                     Debug.LogError($"[TagEdit] Коллизия хеша для тега '{name}'. Вычисленный id {id} уже занят именем '{boundName ?? "<unknown>"}'. Тег пропущен.");
                     continue;
                 }
 
-                // Проверка коллизии среди новых генерируемых тегов в рамках одного добавления
                 if (newGeneratedValues.Contains(id))
                 {
                     Debug.LogError($"[TagEdit] Коллизия хеша между новыми тегами при одном добавлении. Имя '{name}' имеет тот же id {id}, что и другой новый тег. Тег пропущен.");
@@ -467,28 +422,21 @@ namespace Spacats.Utils
                 }
 
                 newGeneratedValues.Add(id);
-                string line = indent + name + " = " + id + ",";
-                toInsert.Add(line);
+                toInsert.Add(indent + name + " = " + id + ",");
             }
 
-            if (toInsert.Count == 0)
-            {
-                Debug.LogWarning("[TagEdit] Новые теги не добавлены из-за коллизий или дубликатов.");
-                return;
-            }
+            return toInsert;
+        }
 
-            // Вставляем перед строкой с закрывающей скобкой енума
+        private void InsertBeforeClosingBrace(string path, string[] allLines, int enumEndBraceLine, List<string> toInsert)
+        {
             var updated = new List<string>(allLines.Length + toInsert.Count);
             for (int i = 0; i < allLines.Length; i++)
             {
                 if (i == enumEndBraceLine)
                 {
-                    for (int k = 0; k < toInsert.Count; k++)
-                    {
-                        updated.Add(toInsert[k]);
-                    }
+                    for (int k = 0; k < toInsert.Count; k++) updated.Add(toInsert[k]);
                 }
-
                 updated.Add(allLines[i]);
             }
 
@@ -496,7 +444,6 @@ namespace Spacats.Utils
             AssetDatabase.SaveAssets();
             AssetDatabase.ImportAsset(path);
             AssetDatabase.Refresh();
-
             Debug.Log($"[TagEdit] Добавлено новых тегов в enum: {toInsert.Count}. Файл сохранён: {path}");
         }
 
