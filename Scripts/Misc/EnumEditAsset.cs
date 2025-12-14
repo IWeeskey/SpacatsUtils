@@ -67,143 +67,10 @@ namespace Spacats.Utils
             for (int i = 0; i < allLines.Length; i++)
             {
                 string line = allLines[i];
-                if (!foundEnum)
-                {
-                    // Ищем строку с объявлением енума
-                    if (!string.IsNullOrEmpty(enumName) && line.Contains("enum " + enumName))
-                    {
-                        foundEnum = true;
-
-                        // Может быть, что "{" на той же строке
-                        int braceIndex = line.IndexOf('{');
-                        if (braceIndex >= 0)
-                        {
-                            startedBlock = true;
-                            braceDepth = 1;
-
-                            // Всё после этой строки продолжим разбирать как тело
-                        }
-                    }
-
-                    continue;
-                }
-
-                if (!startedBlock)
-                {
-                    // Ждём открытия тела енума
-                    int braceIndex = line.IndexOf('{');
-                    if (braceIndex >= 0)
-                    {
-                        startedBlock = true;
-                        braceDepth = 1;
-                        continue;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-
-                // Уже внутри тела енума. Считаем глубину по всем символам.
-                for (int c = 0; c < line.Length; c++)
-                {
-                    char ch = line[c];
-                    if (ch == '{')
-                    {
-                        braceDepth++;
-                    }
-                    else if (ch == '}')
-                    {
-                        braceDepth--;
-                    }
-                }
-
-                // Перед тем как выйти (braceDepth==0), добавим предыдущую строку, если это содержимое
-                if (braceDepth >= 1)
-                {
-                    string trimmed = line.Trim();
-                    if (!string.IsNullOrEmpty(trimmed))
-                    {
-                        // Пропускаем строки-комментарии
-                        if (!trimmed.StartsWith("//"))
-                        {
-                            enumLines.Add(trimmed);
-                        }
-                    }
-                }
-                else
-                {
-                    // Закрыли тело енума — выходим из цикла
-                    break;
-                }
+                bool shouldBreak = ProcessEnumLine(line, enumName, enumLines, ref foundEnum, ref startedBlock, ref braceDepth);
+                if (shouldBreak) break;
             }
-
-            // Логируем все строки из енума
-            for (int i = 0; i < enumLines.Count; i++)
-            {
-                //Debug.Log($"[TagEdit] Строка енума: {enumLines[i]}");
-            }
-
-            // Находим максимальный присвоенный номер вида "= X"
-            int maxValue = int.MinValue;
-            for (int i = 0; i < enumLines.Count; i++)
-            {
-                string s = enumLines[i];
-                int eq = s.IndexOf('=');
-                if (eq >= 0)
-                {
-                    // Берём подстроку после '=' и выдираем число
-                    int numberStart = -1;
-                    int numberEnd = -1;
-                    for (int k = eq + 1; k < s.Length; k++)
-                    {
-                        char ch = s[k];
-                        if (numberStart < 0)
-                        {
-                            if (ch == '-' || (ch >= '0' && ch <= '9'))
-                            {
-                                numberStart = k;
-                            }
-                        }
-                        else
-                        {
-                            if (!(ch >= '0' && ch <= '9'))
-                            {
-                                numberEnd = k - 1;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (numberStart >= 0 && numberEnd < numberStart)
-                    {
-                        numberEnd = s.Length - 1;
-                    }
-
-                    if (numberStart >= 0 && numberEnd >= numberStart)
-                    {
-                        string numStr = s.Substring(numberStart, numberEnd - numberStart + 1);
-                        int parsed;
-                        if (int.TryParse(numStr, out parsed))
-                        {
-                            if (parsed > maxValue)
-                            {
-                                maxValue = parsed;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (maxValue == int.MinValue)
-            {
-                Debug.Log("[TagEdit] Не найдено присвоенных чисел в enum. Максимальный индекс: 0");
-            }
-            else
-            {
-                Debug.Log($"[TagEdit] Максимальный индекс енума: {maxValue}");
-            }
-
+            
             // Добавляем отвалидированные теги в enum
             AddValidatedTagsToEnum();
             NewTagsToAdd.Clear();
@@ -220,81 +87,85 @@ namespace Spacats.Utils
 
             for (int i = 0; i < NewTagsToAdd.Count; i++)
             {
-                string original = NewTagsToAdd[i];
-                if (original == null)
-                {
-                    Debug.LogWarning("[TagEdit] Найдена null-строка в списке тегов. Пропускаю.");
-                    continue;
-                }
-
-                string trimmed = original.Trim();
-                string lower = trimmed.ToLowerInvariant();
-
-                // Разрешены символы: a-z, 0-9, _
-                var sb = new StringBuilder(lower.Length);
-                bool lastUnderscore = false;
-                for (int c = 0; c < lower.Length; c++)
-                {
-                    char ch = lower[c];
-                    bool isAllowed = (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_';
-                    if (isAllowed)
-                    {
-                        sb.Append(ch);
-                        lastUnderscore = ch == '_';
-                    }
-                    else
-                    {
-                        if (!lastUnderscore)
-                        {
-                            sb.Append('_');
-                            lastUnderscore = true;
-                        }
-                    }
-                }
-
-                // Убираем начальные/конечные подчёркивания, если они склеились
-                int start = 0;
-                int end = sb.Length - 1;
-                while (start <= end && sb.Length > 0 && sb[start] == '_') { start++; }
-                while (end >= start && sb.Length > 0 && sb[end] == '_') { end--; }
-
-                string fixedStr;
-                if (start <= end)
-                {
-                    fixedStr = sb.ToString(start, end - start + 1);
-                }
-                else
-                {
-                    fixedStr = string.Empty;
-                }
-
-                // Имя не должно начинаться с цифры — добавляем подчёркивание в начало
-                if (!string.IsNullOrEmpty(fixedStr))
-                {
-                    char first = fixedStr[0];
-                    if (first >= '0' && first <= '9')
-                    {
-                        fixedStr = "_" + fixedStr;
-                    }
-                }
-
-                if (string.IsNullOrEmpty(fixedStr))
-                {
-                    Debug.LogWarning($"[TagEdit] В теге \"{original}\" найден некорректный формат. После очистки строка пуста — тег пропущен.");
-                    continue;
-                }
-
-                if (fixedStr != original)
-                {
-                    Debug.Log($"[TagEdit] В теге \"{original}\" найден некорректный формат и исправлен на \"{fixedStr}\".");
-                }
-
-                validated.Add(fixedStr);
+                ProcessNewTag(NewTagsToAdd[i], validated);
             }
 
             NewTagsToAdd = validated;
             EditorUtility.SetDirty(this);
             AssetDatabase.SaveAssets();
+        }
+
+        private void ProcessNewTag(string original, List<string> validated)
+        {
+            if (original == null)
+            {
+                Debug.LogWarning("[TagEdit] Найдена null-строка в списке тегов. Пропускаю.");
+                return;
+            }
+
+            string trimmed = original.Trim();
+            string lower = trimmed.ToLowerInvariant();
+
+            // Разрешены символы: a-z, 0-9, _
+            var sb = new StringBuilder(lower.Length);
+            bool lastUnderscore = false;
+            for (int c = 0; c < lower.Length; c++)
+            {
+                char ch = lower[c];
+                bool isAllowed = (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_';
+                if (isAllowed)
+                {
+                    sb.Append(ch);
+                    lastUnderscore = ch == '_';
+                }
+                else
+                {
+                    if (!lastUnderscore)
+                    {
+                        sb.Append('_');
+                        lastUnderscore = true;
+                    }
+                }
+            }
+
+            //Убираем начальные/конечные подчёркивания, если они склеились
+            int start = 0;
+            int end = sb.Length - 1;
+            while (start <= end && sb.Length > 0 && sb[start] == '_') { start++; }
+            while (end >= start && sb.Length > 0 && sb[end] == '_') { end--; }
+
+            string fixedStr;
+            if (start <= end)
+            {
+                fixedStr = sb.ToString(start, end - start + 1);
+            }
+            else
+            {
+                fixedStr = string.Empty;
+            }
+
+            // Имя не должно начинаться с цифры — добавляем подчёркивание в начало
+            if (!string.IsNullOrEmpty(fixedStr))
+            {
+                char first = fixedStr[0];
+                if (first >= '0' && first <= '9')
+                {
+                    fixedStr = "_" + fixedStr;
+                }
+            }
+
+            if (string.IsNullOrEmpty(fixedStr))
+            {
+                Debug.LogWarning($"[TagEdit] В теге \"{original}\" найден некорректный формат. После очистки строка пуста — тег пропущен.");
+                return;
+            }
+
+            if (fixedStr != original)
+            {
+                Debug.Log($"[TagEdit] В теге \"{original}\" найден некорректный формат и исправлен на \"{fixedStr}\".");
+            }
+
+            validated.Add(fixedStr);
         }
 
         private void AddValidatedTagsToEnum()
@@ -642,6 +513,80 @@ namespace Spacats.Utils
                     hash *= prime;
                 }
                 return (int)hash; // может быть отрицательным — это нормально
+            }
+        }
+
+        private bool ProcessEnumLine(string line, string enumName, List<string> enumLines, ref bool foundEnum, ref bool startedBlock, ref int braceDepth)
+        {
+            if (!foundEnum)
+            {
+                // Ищем строку с объявлением енума
+                if (!string.IsNullOrEmpty(enumName) && line.Contains("enum " + enumName))
+                {
+                    foundEnum = true;
+
+                    // Может быть, что "{" на той же строке
+                    int braceIndex = line.IndexOf('{');
+                    if (braceIndex >= 0)
+                    {
+                        startedBlock = true;
+                        braceDepth = 1;
+                        // Всё после этой строки продолжим разбирать как тело
+                    }
+                }
+
+                return false; // продолжаем разбор следующих строк
+            }
+
+            if (!startedBlock)
+            {
+                // Ждём открытия тела енума
+                int braceIndex = line.IndexOf('{');
+                if (braceIndex >= 0)
+                {
+                    startedBlock = true;
+                    braceDepth = 1;
+                    return false; // переходим к следующей строке
+                }
+                else
+                {
+                    return false; // продолжаем ожидать открывающей скобки
+                }
+            }
+
+            // Уже внутри тела енума. Считаем глубину по всем символам.
+            for (int c = 0; c < line.Length; c++)
+            {
+                char ch = line[c];
+                if (ch == '{')
+                {
+                    braceDepth++;
+                }
+                else if (ch == '}')
+                {
+                    braceDepth--;
+                }
+            }
+
+            // Перед тем как выйти (braceDepth==0), добавим предыдущую строку, если это содержимое
+            if (braceDepth >= 1)
+            {
+                string trimmed = line.Trim();
+                if (!string.IsNullOrEmpty(trimmed))
+                {
+                    // Пропускаем строки-комментарии
+                    if (!trimmed.StartsWith("//"))
+                    {
+                        enumLines.Add(trimmed);
+                    }
+                }
+
+                return false; // остаёмся внутри тела енума
+            }
+            else
+            {
+                // Закрыли тело енума — выходим из цикла внешнего for
+                return true;
             }
         }
 
