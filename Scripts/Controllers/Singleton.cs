@@ -24,6 +24,7 @@ namespace Spacats.Utils
         protected virtual void SSetDefaultParameters() { TryToShowLog("SetDefaultParameters", LogType.Log, true); }
         protected virtual void SOnSceneUnloading(Scene scene) { TryToShowLog("OnSceneUnloading", LogType.Log, true); }
         protected virtual void SOnSceneLoaded(Scene scene, LoadSceneMode mode) { TryToShowLog("OnSceneLoaded", LogType.Log, true); }
+        protected virtual void SFixedUpdate() { }
         /// <summary>
         /// Same as basic unity Update()
         /// </summary>
@@ -141,6 +142,12 @@ namespace Spacats.Utils
             if (!IsInstance) return;
             SUpdate();
             SSharedUpdate(false);
+        }
+
+        private void FixedUpdate()
+        {
+            if (!IsInstance) return;
+            SFixedUpdate();
         }
 
         private void LateUpdate()

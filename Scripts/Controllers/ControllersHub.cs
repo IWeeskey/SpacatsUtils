@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,8 +14,13 @@ namespace Spacats.Utils
     [DefaultExecutionOrder(-20)]
     public class ControllersHub : Singleton<ControllersHub>
     {
-        public delegate void CHubSceneInit();
-        public static event CHubSceneInit OnCHubSceneInit;
+        public static event Action OnHubUpdate;
+        public static event Action OnHubFixedUpdate;
+        public static event Action OnHubLateUpdate;
+        public static event Action OnHubSharedUpdate;
+        public static event Action OnHubClear;
+        public static event Action<Scene> OnHubSceneUnloading;
+        public static event Action<Scene> OnHubSceneLoaded;
         
         [SerializeField] private List<Controller> _controllers = new List<Controller>();
 
@@ -71,6 +77,7 @@ namespace Spacats.Utils
                 if (!controller.ExecuteInEditor && !Application.isPlaying) continue;
                 controller.COnSceneUnloading(scene);
             }
+            OnHubSceneUnloading?.Invoke(scene);
         }
 
         protected override void SOnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -97,12 +104,18 @@ namespace Spacats.Utils
                 if (!_controllers[i].ExecuteInEditor && !Application.isPlaying) continue;
                 _controllers[i].ExternalOnSceneLoaded(scene, mode);
             }
+            OnHubSceneLoaded?.Invoke(scene);
             
-            OnCHubSceneInit?.Invoke();
-            
-            TryToShowLog("OnCHubSceneInit", LogType.Log, false);
+            TryToShowLog("OnHubSceneLoaded", LogType.Log, false);
         }
-        
+
+
+        protected override void SFixedUpdate()
+        {
+            base.SFixedUpdate();
+            OnHubFixedUpdate?.Invoke();
+        }
+
         protected override void SUpdate()
         {
             base.SUpdate();
@@ -119,6 +132,8 @@ namespace Spacats.Utils
                 //orderCheck += controller.gameObject.name + ", ";
                 controller.CUpdate();
             }
+            
+            OnHubUpdate?.Invoke();
             //Debug.Log(orderCheck);
         }
 
@@ -136,6 +151,8 @@ namespace Spacats.Utils
                 }
                 controller.CLateUpdate();
             }
+            
+            OnHubLateUpdate?.Invoke();
         }
 
 
@@ -167,6 +184,7 @@ namespace Spacats.Utils
                 }
                 controller.CSharedUpdate(isGuiCall);
             }
+            OnHubSharedUpdate?.Invoke();
         }
         #endregion
 
@@ -190,6 +208,7 @@ namespace Spacats.Utils
         {
             TryToShowLog("Clear");
             _controllers?.Clear();
+            OnHubClear?.Invoke();
         }
 
         public bool RegisterController(Controller controller)

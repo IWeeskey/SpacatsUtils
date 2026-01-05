@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Spacats.Utils
 {
@@ -9,13 +10,13 @@ namespace Spacats.Utils
     {
         void Awake()
         {
-            ControllersHub.OnCHubSceneInit += OnCHubSceneInit;
+            ControllersHub.OnHubSceneLoaded += OnHubSceneLoaded;
             Debug.Log("ExampleControllerTestMonoScript Awake");
         }
 
         private void OnDestroy()
         {
-            ControllersHub.OnCHubSceneInit -= OnCHubSceneInit;
+            ControllersHub.OnHubSceneLoaded -= OnHubSceneLoaded;
         }
 
         void Start()
@@ -23,7 +24,7 @@ namespace Spacats.Utils
             Debug.Log("ExampleControllerTestMonoScript START");
         }
 
-        private void OnCHubSceneInit()
+        private void OnHubSceneLoaded(Scene scene)
         {
             Debug.Log("ExampleControllerTestMonoScript HUB INIT");
         }

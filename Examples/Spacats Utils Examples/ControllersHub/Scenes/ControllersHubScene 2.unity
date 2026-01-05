@@ -312,6 +312,7 @@ MonoBehaviour:
   ExecuteInEditor: 0
   ShowLogs: 0
   ShowCLogs: 0
+  ExecuteOrder: 0
   PersistsAtScenes: []
 --- !u!4 &1821030705
 Transform:
@@ -409,10 +410,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UniqueTag: 2
   ExecuteInEditor: 1
-  ShowLogs: 1
+  ShowLogs: 0
   ShowCLogs: 0
+  ExecuteOrder: 0
   PersistsAtScenes: []
-  RandomValue: 45
+  RandomValue: 54
 --- !u!1 &8175575172361218517
 GameObject:
   m_ObjectHideFlags: 0
@@ -424,7 +426,7 @@ GameObject:
   - component: {fileID: 4718847782507385509}
   - component: {fileID: 7382031054070675749}
   m_Layer: 0
-  m_Name: '[SpaCats] ExampleController 1'
+  m_Name: '[SpaCats] ExampleController 2'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
