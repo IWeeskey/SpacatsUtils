@@ -64,13 +64,11 @@ namespace Spacats.Utils
         protected override void SOnSceneUnloading(Scene scene)
         {
             base.SOnSceneUnloading(scene);
-            foreach (Controller controller in _controllers)
+            for (int i = _controllers.Count - 1; i >= 0; i--)
             {
+                var controller = _controllers[i];
                 if (controller == null) continue;
-                if (!controller.ExecuteInEditor && !Application.isPlaying)
-                {
-                    continue;
-                }
+                if (!controller.ExecuteInEditor && !Application.isPlaying) continue;
                 controller.COnSceneUnloading(scene);
             }
         }
@@ -108,6 +106,7 @@ namespace Spacats.Utils
         protected override void SUpdate()
         {
             base.SUpdate();
+            //string orderCheck = "";
             for (int i = _controllers.Count - 1; i>=0; i--)
             {
                 Controller controller = _controllers[i];
@@ -116,8 +115,11 @@ namespace Spacats.Utils
                 {
                     continue;
                 }
+                
+                //orderCheck += controller.gameObject.name + ", ";
                 controller.CUpdate();
             }
+            //Debug.Log(orderCheck);
         }
 
         protected override void SLateUpdate()
@@ -206,6 +208,7 @@ namespace Spacats.Utils
 
             TryToShowLog("RegisterController: " + controller.gameObject.name);
             _controllers.Add(controller);
+            SortControllersBackwards();
             return true;
         }
 
@@ -232,6 +235,28 @@ namespace Spacats.Utils
             }
 
             return true;
+        }
+
+        private void SortControllersBackwards()
+        {
+            if (_controllers == null || _controllers.Count <= 1) return;
+
+            _controllers.Sort((a, b) =>
+            {
+                if (ReferenceEquals(a, b)) return 0;
+                if (a == null) return 1; // place nulls at the end
+                if (b == null) return -1;
+
+                // Descending by ExecuteOrder: higher first, lower last
+                int orderCompare = b.ExecuteOrder.CompareTo(a.ExecuteOrder);
+                if (orderCompare != 0) return orderCompare;
+
+                // Deterministic tie-breakers
+                // int tagCompare = string.Compare(a.UniqueTag, b.UniqueTag, System.StringComparison.Ordinal);
+                // if (tagCompare != 0) return tagCompare;
+
+                return a.GetInstanceID().CompareTo(b.GetInstanceID());
+            });
         }
 
         public bool UnRegisterController(Controller controller)

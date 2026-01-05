@@ -407,12 +407,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23bee55fdb002c94a839399bcc60e37a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UniqueTag: 1
+  UniqueTag: 2
   ExecuteInEditor: 1
   ShowLogs: 1
   ShowCLogs: 0
   PersistsAtScenes: []
-  RandomValue: 60
+  RandomValue: 45
 --- !u!1 &8175575172361218517
 GameObject:
   m_ObjectHideFlags: 0

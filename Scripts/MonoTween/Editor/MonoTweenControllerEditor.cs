@@ -41,6 +41,9 @@ namespace Spacats.Utils
         {
             SerializedProperty executeInEditor = serializedObject.FindProperty("ExecuteInEditor");
             EditorGUILayout.PropertyField(executeInEditor);
+            
+            SerializedProperty executeOrder = serializedObject.FindProperty("ExecuteOrder");
+            EditorGUILayout.PropertyField(executeOrder);
 
             SerializedProperty showLogs = serializedObject.FindProperty("ShowLogs");
             EditorGUILayout.PropertyField(showLogs);

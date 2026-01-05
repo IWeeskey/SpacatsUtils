@@ -28,6 +28,9 @@ namespace Spacats.Utils
         private void DrawFields()
         {
             SceneController targetScript = (SceneController)target;
+            
+            SerializedProperty executeOrder = serializedObject.FindProperty("ExecuteOrder");
+            EditorGUILayout.PropertyField(executeOrder);
 
             GUILayout.TextArea("Is Loading: " + targetScript.IsLoading);
             GUILayout.TextArea("LoadingSceneName: " + targetScript.LoadingSceneName);

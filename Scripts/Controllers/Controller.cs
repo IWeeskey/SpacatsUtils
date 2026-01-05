@@ -26,6 +26,9 @@ namespace Spacats.Utils
         [Tooltip("Show controller logs for testing purposes, such as 'Awake', 'OnEnable' etc.")]
         public bool ShowCLogs = false;
 
+        [Tooltip("Order of execution in ControllersHub. Lower value means earlier execution.")]
+        public int ExecuteOrder = 0;
+
         [Tooltip("If the list is empty, this controller will persist across all scenes. " +
             "Otherwise, it will automatically be destroyed when loading a scene whose name is not in the list.")]
         public List<string> PersistsAtScenes = new List<string>();

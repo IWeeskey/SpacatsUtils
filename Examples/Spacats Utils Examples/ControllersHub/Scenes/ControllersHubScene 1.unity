@@ -132,7 +132,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7208687257993278173, guid: 1fe927ed8b7735646b3e812acd4db23e, type: 3}
       propertyPath: m_Name
-      value: '[SpaCats] ExampleController2'
+      value: '[SpaCats] ExampleController2 2'
       objectReference: {fileID: 0}
     - target: {fileID: 7506513633234546082, guid: 1fe927ed8b7735646b3e812acd4db23e, type: 3}
       propertyPath: ShowLogs
@@ -143,8 +143,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7506513633234546082, guid: 1fe927ed8b7735646b3e812acd4db23e, type: 3}
+      propertyPath: UniqueTag
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7506513633234546082, guid: 1fe927ed8b7735646b3e812acd4db23e, type: 3}
       propertyPath: RandomValue
-      value: 60
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 7506513633234546082, guid: 1fe927ed8b7735646b3e812acd4db23e, type: 3}
+      propertyPath: ExecuteOrder
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 8567274354732687308, guid: 1fe927ed8b7735646b3e812acd4db23e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -353,9 +361,9 @@ MonoBehaviour:
   ShowLogs: 0
   ShowSLogs: 0
   _controllers:
-  - {fileID: 1825125288}
   - {fileID: 398013238}
   - {fileID: 2085257968}
+  - {fileID: 1825125288}
 --- !u!4 &1074950360
 Transform:
   m_ObjectHideFlags: 0
@@ -407,6 +415,7 @@ MonoBehaviour:
   ExecuteInEditor: 0
   ShowLogs: 0
   ShowCLogs: 0
+  ExecuteOrder: 0
   PersistsAtScenes: []
 --- !u!4 &1825125289
 Transform:
@@ -481,11 +490,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7382031054824634239, guid: 958a5d901f066f442a5ccf3de00e0e28, type: 3}
       propertyPath: RandomValue
-      value: 61
+      value: 87
+      objectReference: {fileID: 0}
+    - target: {fileID: 7382031054824634239, guid: 958a5d901f066f442a5ccf3de00e0e28, type: 3}
+      propertyPath: ExecuteOrder
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 8175575172416694159, guid: 958a5d901f066f442a5ccf3de00e0e28, type: 3}
       propertyPath: m_Name
-      value: '[SpaCats] ExampleController'
+      value: '[SpaCats] ExampleController 1'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
