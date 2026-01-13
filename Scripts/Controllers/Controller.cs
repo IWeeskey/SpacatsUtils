@@ -35,21 +35,32 @@ namespace Spacats.Utils
 
         protected bool _applicationIsQuitting = false;
         protected bool _registered = false;
-
+        protected bool _customDataCreated = false;
+        
         public delegate void ControllerRegistered (Controller controller);
         public static event ControllerRegistered OnControllerRegistered;
         
         protected virtual void CAwake() { TryToShowLog("Awake", LogType.Log, true); }
         protected virtual void COnEnable() { TryToShowLog("OnEnable", LogType.Log, true); }
         protected virtual void COnDisable() { TryToShowLog("OnDisable", LogType.Log, true); }
-        protected virtual void COnRegisteredEnable() { TryToShowLog("COnRegisteredEnable", LogType.Log, true); }
-        protected virtual void COnRegisteredDisable() { TryToShowLog("COnRegisteredDisable", LogType.Log, true); }
+        protected virtual void COnRegisteredEnable() { TryDispose(); TryCreate(); TryToShowLog("COnRegisteredEnable", LogType.Log, true); }
+        protected virtual void COnRegisteredDisable() { TryDispose(); TryToShowLog("COnRegisteredDisable", LogType.Log, true); }
         protected virtual void COnDestroy() { TryToShowLog("OnDestroy", LogType.Log, true); }
         protected virtual void COnApplicationQuit() { TryToShowLog("OnApplicationQuit", LogType.Log, true); }
-        protected virtual void COnRegister() { TryToShowLog("OnRegister", LogType.Log, true); }
-        public virtual void COnSceneUnloading(Scene scene) { TryToShowLog("OnSceneUnloading " + scene.name, LogType.Log, true); }
+        protected virtual void COnRegister() { TryDispose(); TryCreate(); TryToShowLog("OnRegister", LogType.Log, true); }
+        protected virtual void CCreate() { _customDataCreated = true; TryToShowLog("CCreate", LogType.Log, true);  }
+        protected virtual void CDispose() { _customDataCreated = false; ForceFinishJobs(); TryToShowLog("CDispose", LogType.Log, true);  }
+        
+        
+        public virtual void COnSceneUnloading(Scene scene) {ForceFinishJobs(); TryToShowLog("OnSceneUnloading " + scene.name, LogType.Log, true); }
         public virtual void COnSceneLoaded(Scene scene, LoadSceneMode mode) { TryToShowLog("OnSceneLoaded " + scene.name, LogType.Log, true); }
+        public virtual void TryCreate() { if (_customDataCreated) return; CCreate(); TryToShowLog("TryCreate", LogType.Log, true); }
+        public virtual void TryDispose() { if (!_customDataCreated) return;  CDispose(); TryToShowLog("TryDispose", LogType.Log, true); }
+        public virtual void ForceFinishJobs() { TryToShowLog("ForceFinishJobs", LogType.Log, true); }
+        
+        
 
+        
 
 
         /// <summary>
