@@ -104,6 +104,7 @@ namespace Spacats.Utils
                 if (!_controllers[i].ExecuteInEditor && !Application.isPlaying) continue;
                 _controllers[i].ExternalOnSceneLoaded(scene, mode);
             }
+            ApplyHierarchyOrderToChildren();
             OnHubSceneLoaded?.Invoke(scene);
             
             TryToShowLog("OnHubSceneLoaded", LogType.Log, false);
@@ -270,12 +271,24 @@ namespace Spacats.Utils
                 int orderCompare = b.ExecuteOrder.CompareTo(a.ExecuteOrder);
                 if (orderCompare != 0) return orderCompare;
 
-                // Deterministic tie-breakers
-                // int tagCompare = string.Compare(a.UniqueTag, b.UniqueTag, System.StringComparison.Ordinal);
-                // if (tagCompare != 0) return tagCompare;
-
                 return a.GetInstanceID().CompareTo(b.GetInstanceID());
             });
+            ApplyHierarchyOrderToChildren();
+        }
+        
+        private void ApplyHierarchyOrderToChildren()
+        {
+            if (_controllers == null || _controllers.Count == 0) return;
+
+            int sibling = 0;
+            // Идём в обратном порядке списка, т.к. выполнение идёт от конца к началу
+            for (int i = _controllers.Count - 1; i >= 0; i--)
+            {
+                var c = _controllers[i];
+                if (c == null) continue;
+                c.CheckHierarchy();
+                c.transform.SetSiblingIndex(sibling++);
+            }
         }
 
         public bool UnRegisterController(Controller controller)

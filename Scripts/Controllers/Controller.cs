@@ -165,10 +165,11 @@ namespace Spacats.Utils
 
         private void RefreshName()
         {
-            gameObject.name = "[SpaCats] " + GetType().Name + " " + UniqueTag;
+            gameObject.name = "[# SpaCats] " + GetType().Name + " (" + UniqueTag+") ";
+            gameObject.name = gameObject.name.Replace("#", ExecuteOrder.ToString());
         }
 
-        protected virtual void CheckHierarchy()
+        public virtual void CheckHierarchy()
         {
             Transform hubTransform = ControllersHub.Instance.transform;
             if (transform.parent != hubTransform) transform.parent = hubTransform;

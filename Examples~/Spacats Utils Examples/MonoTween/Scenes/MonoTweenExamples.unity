@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 336219667}
   - component: {fileID: 336219666}
   m_Layer: 0
-  m_Name: '[SpaCats] PauseController '
+  m_Name: '[0 SpaCats] PauseController '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -209,7 +209,8 @@ MonoBehaviour:
   UniqueTag: 
   ExecuteInEditor: 0
   ShowLogs: 0
-  ShowControllerLogs: 0
+  ShowCLogs: 0
+  ExecuteOrder: 0
   PersistsAtScenes: []
 --- !u!4 &336219667
 Transform:
@@ -257,8 +258,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AlwaysOnTop: 1
   ShowLogs: 0
-  ShowSingletonLogs: 0
-  _controllers: []
+  ShowSLogs: 0
+  _controllers:
+  - {fileID: 520325641}
+  - {fileID: 336219666}
+  - {fileID: 1573203292}
 --- !u!4 &371722503
 Transform:
   m_ObjectHideFlags: 0
@@ -272,9 +276,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 520325642}
-  - {fileID: 336219667}
   - {fileID: 1573203293}
+  - {fileID: 336219667}
+  - {fileID: 520325642}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &520325640
@@ -288,7 +292,7 @@ GameObject:
   - component: {fileID: 520325642}
   - component: {fileID: 520325641}
   m_Layer: 0
-  m_Name: '[SpaCats] MonoTweenController '
+  m_Name: '[1 SpaCats] MonoTweenController '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -309,9 +313,11 @@ MonoBehaviour:
   UniqueTag: 
   ExecuteInEditor: 1
   ShowLogs: 0
-  ShowControllerLogs: 0
+  ShowCLogs: 0
+  ExecuteOrder: 1
   PersistsAtScenes: []
   PerformMeasurements: 1
+  SkipWhileEditor: 1
 --- !u!4 &520325642
 Transform:
   m_ObjectHideFlags: 0
@@ -701,7 +707,7 @@ GameObject:
   - component: {fileID: 1573203293}
   - component: {fileID: 1573203292}
   m_Layer: 0
-  m_Name: '[SpaCats] GUIFps '
+  m_Name: '[0 SpaCats] GUIFps '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -722,7 +728,8 @@ MonoBehaviour:
   UniqueTag: 
   ExecuteInEditor: 1
   ShowLogs: 0
-  ShowControllerLogs: 0
+  ShowCLogs: 0
+  ExecuteOrder: 0
   PersistsAtScenes: []
   PosX: 0.043
   PosY: 0.032
@@ -869,8 +876,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PerformLogic: 1
+  ExecuteInEditor: 1
   _buttonCount: 1
   _buttonHeightPercent: 0.08
+  _buttonBottomPercent: 1
   _buttonSpacing: 5
   _fontScale: 0.4
 --- !u!4 &1813215877
