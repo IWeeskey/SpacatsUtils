@@ -165,7 +165,8 @@ namespace Spacats.Utils
 
         private void RefreshName()
         {
-            gameObject.name = "[# SpaCats] " + GetType().Name + " (" + UniqueTag+") ";
+            string tag = UniqueTag.Length == 0 ? "" : " (" + UniqueTag + ")";
+            gameObject.name = "[# SpaCats] " + GetType().Name + tag;
             gameObject.name = gameObject.name.Replace("#", ExecuteOrder.ToString());
         }
 
