@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.InputSystem;
 
 namespace Spacats.Utils
 {
@@ -25,25 +26,35 @@ namespace Spacats.Utils
 		[Tooltip("Prefix to screenshot file name")]
 		public string NamePrefix = "TestScreenShot";
 
-		[Tooltip("KeyCode to capture screenshot")]
-		public KeyCode CaptureKey = KeyCode.C;
-
-		[Tooltip("KeyCode to pause editor")]
-		public KeyCode EditorPauseKey = KeyCode.P;
-
-		[Tooltip("KeyCode to pause game")]
-		public KeyCode GamePauseKey = KeyCode.O;
-
 		[Tooltip("Resolution scale of screenshots")]
 		public int SuperSize = 1;
 
 		[Tooltip("Change it to capture screenshot while not in play mode")]
 		public bool EditorCaptureScreen = false;
 
+		[SerializeField] private InputActionReference _captureScreenshotAction;
+		[SerializeField] private InputActionReference _pauseEditorAction;
+		[SerializeField] private InputActionReference _pauseGameAction;
+
 		protected override void COnRegister()
 		{
 			base.COnRegister();
 			_instance = this;
+
+			// Fallback to global actions if references are not assigned
+			if (_captureScreenshotAction == null && InputSystem.actions != null)
+				_captureScreenshotAction = InputActionReference.Create(InputSystem.actions.FindAction("Debug/CaptureScreenshot"));
+			
+			if (_pauseEditorAction == null && InputSystem.actions != null)
+				_pauseEditorAction = InputActionReference.Create(InputSystem.actions.FindAction("Debug/PauseEditor"));
+			
+			if (_pauseGameAction == null && InputSystem.actions != null)
+				_pauseGameAction = InputActionReference.Create(InputSystem.actions.FindAction("Debug/PauseGame"));
+
+			// Enable actions if they are not enabled (crucial for non-project-wide or custom setups)
+			_captureScreenshotAction?.action?.Enable();
+			_pauseEditorAction?.action?.Enable();
+			_pauseGameAction?.action?.Enable();
 		}
 
 		public override void CSharedUpdate(bool isGuiCall = false)
@@ -58,13 +69,13 @@ namespace Spacats.Utils
 
 		private void CatchEditorPause()
 		{
-			if (!Input.GetKeyDown(EditorPauseKey)) return;
+			if (_pauseEditorAction == null || !_pauseEditorAction.action.WasPressedThisFrame()) return;
 			Debug.Break();
 		}
 		
 		private void CatchGamePause()
 		{
-			if (!Input.GetKeyDown(GamePauseKey)) return;
+			if (_pauseGameAction == null || !_pauseGameAction.action.WasPressedThisFrame()) return;
 			if (!PauseController.HasInstance) return;
 			PauseController.Instance.SwitchPause();
 		}
@@ -72,7 +83,8 @@ namespace Spacats.Utils
 		private void CatchScreenshotCapture()
 		{
 #if UNITY_EDITOR
-			if (!Input.GetKeyDown(CaptureKey) && !EditorCaptureScreen) return;
+			bool inputPressed = _captureScreenshotAction != null && _captureScreenshotAction.action.WasPressedThisFrame();
+			if (!inputPressed && !EditorCaptureScreen) return;
 			EditorCaptureScreen = false;
 			string path = SavePath;
 			string screenName = NamePrefix + "_" + DateTime.Now.Day.ToString() + "_" + DateTime.Now.Month.ToString() + "_" + DateTime.Now.Year.ToString() + "_" +
