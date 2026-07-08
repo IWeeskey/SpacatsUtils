@@ -9,6 +9,7 @@ namespace Spacats.Utils
         [Range(0f, 1f)] public float PosY = 0.01f;
         [Range(0f, 0.05f)] public float FontSize = 0.025f;
         public Color FontColor = Color.gray;
+        public Font MonoFont;
 
         [Header("Logic Settings")]
         public bool LogicEnabled = true;
@@ -87,6 +88,24 @@ namespace Spacats.Utils
             }
         }
 
+        private static Font _defaultMonoFont;
+        private static Font GetDefaultMonospaceFont()
+        {
+            if (_defaultMonoFont != null) return _defaultMonoFont;
+
+            string[] candidates = { "Consolas", "Courier New", "Courier", "Menlo", "monospace" };
+            foreach (string name in candidates)
+            {
+                _defaultMonoFont = Font.CreateDynamicFontFromOSFont(name, 16);
+                if (_defaultMonoFont != null && _defaultMonoFont.dynamic)
+                {
+                    _defaultMonoFont.name = name;
+                    break;
+                }
+            }
+            return _defaultMonoFont;
+        }
+
         private void OnGUI()
         {
             if (!ExecuteInEditor && !Application.isPlaying) return;
@@ -99,15 +118,19 @@ namespace Spacats.Utils
             int mainFontSize = Mathf.RoundToInt(screenWidth * FontSize);
             int smallFontSize = Mathf.RoundToInt(mainFontSize * 0.6f);
 
+            Font mono = MonoFont != null ? MonoFont : GetDefaultMonospaceFont();
+
             GUIStyle mainStyle = new GUIStyle(GUI.skin.label)
             {
                 fontSize = mainFontSize,
+                font = mono,
                 normal = { textColor = Color.white }
             };
 
             GUIStyle smallStyle = new GUIStyle(GUI.skin.label)
             {
                 fontSize = smallFontSize,
+                font = mono,
                 normal = { textColor = Color.white }
             };
 
@@ -116,15 +139,15 @@ namespace Spacats.Utils
 
             GUI.color = FontColor;
 
-            GUI.Label(new Rect(x, y, 300, 100), $"{_avg1Result:0}", mainStyle);
+            GUI.Label(new Rect(x, y, 300, 100), $"{_avg1Result:000}", mainStyle);
 
             if (ShowExtra)
             {
                 y += mainFontSize + 5;
-                GUI.Label(new Rect(x, y, 300, 50), $"Min 10s: {_min10FPS:0}", smallStyle);
+                GUI.Label(new Rect(x, y, 300, 50), $"Min 10s: {_min10FPS:000}", smallStyle);
 
                 y += smallFontSize + 2;
-                GUI.Label(new Rect(x, y, 300, 50), $"Avg 10s: {_avg10Result:0}", smallStyle);
+                GUI.Label(new Rect(x, y, 300, 50), $"Avg 10s: {_avg10Result:000}", smallStyle);
             }
         }
     }
