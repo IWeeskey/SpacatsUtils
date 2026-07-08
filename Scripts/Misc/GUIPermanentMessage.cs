@@ -16,6 +16,8 @@ namespace Spacats.Utils
                 return _instance;
             }
         }
+        
+        public static bool HasInstance => _instance != null;
 
         [Header("Display Settings")]
         [Range(0f, 1f)] public float PosX = 0.01f;
