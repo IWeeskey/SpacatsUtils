@@ -93,6 +93,12 @@ namespace Spacats.Utils
             _messageLines[index] = value;
         }
 
+        public void ClearAll()
+        {
+            _mainMessage = "";
+            _messageLines.Clear();
+        }
+
         private static Font _defaultMonoFont;
         private static Font GetDefaultMonospaceFont()
         {
