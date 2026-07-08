@@ -22,6 +22,7 @@ namespace Spacats.Utils
         [Range(0f, 1f)] public float PosY = 0.01f;
         [Range(0f, 0.05f)] public float FontSize = 0.025f;
         public Color FontColor = Color.gray;
+        public Font MonoFont;
 
         [Header("Logic Settings")]
         public bool LogicEnabled = true;
@@ -56,6 +57,7 @@ namespace Spacats.Utils
             GUIStyle mainStyle = new GUIStyle(GUI.skin.label)
             {
                 fontSize = mainFontSize,
+                font = MonoFont != null ? MonoFont : GetDefaultMonospaceFont(),
                 normal = { textColor = Color.white }
             };
 
@@ -77,7 +79,7 @@ namespace Spacats.Utils
             for (int i = 0; i < _messageLines.Count; i++)
             {
                 string value = _messageLines[i];
-                _fullString +="\n" + i + ":" + value;
+                _fullString += "\n" + i + ": " + value;
             }
         }
 
@@ -89,6 +91,25 @@ namespace Spacats.Utils
                 _messageLines.Add("");
             }
             _messageLines[index] = value;
+        }
+
+        private static Font _defaultMonoFont;
+        private static Font GetDefaultMonospaceFont()
+        {
+            if (_defaultMonoFont != null) return _defaultMonoFont;
+
+            // Пробуем系统ные моноширинные шрифты — на каждой платформе хоть один да есть
+            string[] candidates = { "Consolas", "Courier New", "Courier", "Menlo", "monospace" };
+            foreach (string name in candidates)
+            {
+                _defaultMonoFont = Font.CreateDynamicFontFromOSFont(name, 16);
+                if (_defaultMonoFont != null && _defaultMonoFont.dynamic)
+                {
+                    _defaultMonoFont.name = name;
+                    break;
+                }
+            }
+            return _defaultMonoFont;
         }
     }
 }

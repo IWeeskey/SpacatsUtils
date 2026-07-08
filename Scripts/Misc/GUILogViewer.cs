@@ -12,7 +12,7 @@ namespace Spacats.Utils
         [Range(0f, 1f)]
         [SerializeField] private float _bottomPercent = 0.1f;
 
-        [Range(0.01f, 0.2f)]
+        [Range(0.001f, 0.2f)]
         [SerializeField] private float _fontSizePercent = 0.02f;
 
         private Vector2 _scrollPosition;
@@ -23,6 +23,7 @@ namespace Spacats.Utils
         [Header("Functionality")]
         public bool LoggingEnabled = true;
         [SerializeField] private bool _isLogOpen = false;
+        public Font MonoFont;
         public bool IsOpened => _isLogOpen;
         public void OpenLog() => _isLogOpen = true;
         public void CloseLog() => _isLogOpen = false;
@@ -87,6 +88,7 @@ namespace Spacats.Utils
 
             GUI.skin.label.fontSize = Mathf.RoundToInt(Screen.width * _fontSizePercent);
             GUI.skin.label.wordWrap = true;
+            GUI.skin.label.font = MonoFont != null ? MonoFont : GetDefaultMonospaceFont();
 
             float contentHeight = _logs.Count * (GUI.skin.label.lineHeight + 4);
             _scrollPosition = GUI.BeginScrollView(
@@ -123,6 +125,24 @@ namespace Spacats.Utils
                 default:
                     return Color.white;
             }
+        }
+
+        private static Font _defaultMonoFont;
+        private static Font GetDefaultMonospaceFont()
+        {
+            if (_defaultMonoFont != null) return _defaultMonoFont;
+
+            string[] candidates = { "Consolas", "Courier New", "Courier", "Menlo", "monospace" };
+            foreach (string name in candidates)
+            {
+                _defaultMonoFont = Font.CreateDynamicFontFromOSFont(name, 16);
+                if (_defaultMonoFont != null && _defaultMonoFont.dynamic)
+                {
+                    _defaultMonoFont.name = name;
+                    break;
+                }
+            }
+            return _defaultMonoFont;
         }
 
     }

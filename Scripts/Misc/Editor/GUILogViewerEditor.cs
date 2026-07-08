@@ -42,6 +42,9 @@ namespace Spacats.Utils
             SerializedProperty fontSizePercent = serializedObject.FindProperty("_fontSizePercent");
             EditorGUILayout.PropertyField(fontSizePercent);
 
+            SerializedProperty monoFont = serializedObject.FindProperty("MonoFont");
+            EditorGUILayout.PropertyField(monoFont);
+
         }
     }
 }
