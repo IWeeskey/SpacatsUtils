@@ -22,6 +22,7 @@ namespace Spacats.Utils
         public bool IsStarted => _preStarted;
         public bool IsRunning => IsStarted && !IsComplete;
         public bool ApplyGlobalPause { get; set; }
+        public bool UseUnscaledTime { get; set; }
         public bool IsComplete { get; private set; }
         public float Delay { get; set; }
         public float Duration { get; set; }
@@ -42,7 +43,8 @@ namespace Spacats.Utils
             Action onEnd,
             bool applyGlobalPause = true,
             int repeatCount = 0,
-            int stepsCount = 0)
+            int stepsCount = 0,
+            bool useUnscaledTime = false)
         {
             Delay = Mathf.Max(0f, delay);
             Duration = Mathf.Max(0.0001f, duration);
@@ -52,6 +54,7 @@ namespace Spacats.Utils
             ApplyGlobalPause = applyGlobalPause;
             RepeatCount = Mathf.Max(0, repeatCount);
             StepsCount = Mathf.Max(0, stepsCount);
+            UseUnscaledTime = useUnscaledTime;
         }
 
         public void Start()
@@ -90,7 +93,7 @@ namespace Spacats.Utils
             _selfPaused = false;
         }
 
-        public void Update(float deltaTime, bool isGlobalPaused)
+        public void Update(float deltaTime, float unscaledDeltaTime, bool isGlobalPaused)
         {
             if (IsComplete || _isBroken)
             {
@@ -103,9 +106,11 @@ namespace Spacats.Utils
 
             if (_selfPaused) return;
 
+            float dt = UseUnscaledTime ? unscaledDeltaTime : deltaTime;
+
             if (!_started)
             {
-                _delayTimer += deltaTime;
+                _delayTimer += dt;
 
                 if (_delayTimer < Delay) return;
 
@@ -122,7 +127,7 @@ namespace Spacats.Utils
                 OnStart?.Invoke();
             }
 
-            _time += deltaTime;
+            _time += dt;
             float t = Mathf.Clamp01(_time / Duration);
 
             if (StepsCount > 0)

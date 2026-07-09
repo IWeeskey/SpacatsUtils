@@ -60,7 +60,7 @@ namespace Spacats.Utils
             for (int i = _activeCount - 1; i >= 0; i--)
             {
                 var tween = _tweens[i];
-                tween.Update(Time.deltaTime, IsPaused);
+                tween.Update(Time.deltaTime, Time.unscaledDeltaTime, IsPaused);
 
                 if (tween.IsComplete)
                 {
