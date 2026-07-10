@@ -258,8 +258,8 @@ MonoBehaviour:
   ShowSLogs: 0
   _controllers:
   - {fileID: 520325641}
-  - {fileID: 717189481}
   - {fileID: 336219666}
+  - {fileID: 717189481}
   - {fileID: 1573203292}
 --- !u!4 &371722503
 Transform:
@@ -275,8 +275,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1573203293}
-  - {fileID: 336219667}
   - {fileID: 717189482}
+  - {fileID: 336219667}
   - {fileID: 520325642}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -800,8 +800,9 @@ MonoBehaviour:
   PersistsAtScenes: []
   PosX: 0.043
   PosY: 0.032
-  FontSize: 0.05
+  FontSize: 0.023
   FontColor: {r: 0, g: 0, b: 0, a: 0.49019608}
+  MonoFont: {fileID: 0}
   LogicEnabled: 1
   ShowExtra: 1
 --- !u!4 &1573203293
