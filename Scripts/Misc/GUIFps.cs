@@ -149,10 +149,11 @@ namespace Spacats.Utils
 
             Font mono = MonoFont != null ? MonoFont : GetDefaultMonospaceFont();
 
-            if (_mainStyle == null || _lastScreenW != screenWidth || _lastScreenH != screenHeight)
+            if (_mainStyle == null || _lastScreenW != screenWidth || _lastScreenH != screenHeight || _lastFontSize != mainFontSize)
             {
                 _lastScreenW = (int)screenWidth;
                 _lastScreenH = (int)screenHeight;
+                _lastFontSize = mainFontSize;
                 _mainStyle = new GUIStyle(GUI.skin.label)
                 {
                     fontSize = mainFontSize,
