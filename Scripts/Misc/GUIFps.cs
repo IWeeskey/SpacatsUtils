@@ -57,6 +57,7 @@ namespace Spacats.Utils
         private GUIStyle _smallStyle;
         private int _lastScreenW;
         private int _lastScreenH;
+        private int _lastFontSize;
 
         private static readonly uint _memoryCountersSize = (uint)Marshal.SizeOf<PROCESS_MEMORY_COUNTERS>();
 
