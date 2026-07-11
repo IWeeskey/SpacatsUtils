@@ -195,9 +195,19 @@ namespace Spacats.Utils
                 GUI.Label(new Rect(x, y, 300, 50), $"FPS: {fps:000}", _smallStyle);
                 y += smallFontSize + 2;
 
-                // 4 — Memory
-                double memMB = _memBytes / (1024.0 * 1024.0);
-                GUI.Label(new Rect(x, y, 300, 50), $"MEM: {memMB.ToString("00.0", CultureInfo.CurrentCulture)} MB", _smallStyle);
+                // 4 — Memory (MB или GB динамически)
+                string memStr;
+                if (_memBytes >= 1024L * 1024L * 1024L)
+                {
+                    double memGB = _memBytes / (1024.0 * 1024.0 * 1024.0);
+                    memStr = $"{memGB.ToString("00.0", CultureInfo.CurrentCulture)} GB";
+                }
+                else
+                {
+                    double memMB = _memBytes / (1024.0 * 1024.0);
+                    memStr = $"{memMB.ToString("00.0", CultureInfo.CurrentCulture)} MB";
+                }
+                GUI.Label(new Rect(x, y, 300, 50), $"MEM: {memStr}", _smallStyle);
                 y += smallFontSize + 2;
 
                 // 5-7 — CPU / GPU / CPU->GPU
