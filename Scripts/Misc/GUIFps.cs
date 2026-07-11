@@ -1,3 +1,7 @@
+using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace Spacats.Utils
@@ -5,6 +9,24 @@ namespace Spacats.Utils
     [DefaultExecutionOrder(-10)]
     public class GUIFps : Controller
     {
+        [DllImport("psapi.dll", SetLastError = true)]
+        private static extern bool GetProcessMemoryInfo(IntPtr hProcess, out PROCESS_MEMORY_COUNTERS counters, uint size);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct PROCESS_MEMORY_COUNTERS
+        {
+            public uint cb;
+            public uint PageFaultCount;
+            public ulong PeakWorkingSetSize;
+            public ulong WorkingSetSize;
+            public ulong QuotaPeakPagedPoolUsage;
+            public ulong QuotaPagedPoolUsage;
+            public ulong QuotaPeakNonPagedPoolUsage;
+            public ulong QuotaNonPagedPoolUsage;
+            public ulong PagefileUsage;
+            public ulong PeakPagefileUsage;
+        }
+
         [Header("Display Settings")]
         [Range(0f, 1f)] public float PosX = 0.01f;
         [Range(0f, 1f)] public float PosY = 0.01f;
@@ -26,6 +48,18 @@ namespace Spacats.Utils
 
         private static readonly FrameTiming[] _frameTimings = new FrameTiming[1];
 
+        // Memory
+        private Process _process;
+        private long _memBytes;
+
+        // Cached GUIStyles (чтобы не аллоцировать каждый OnGUI)
+        private GUIStyle _mainStyle;
+        private GUIStyle _smallStyle;
+        private int _lastScreenW;
+        private int _lastScreenH;
+
+        private static readonly uint _memoryCountersSize = (uint)Marshal.SizeOf<PROCESS_MEMORY_COUNTERS>();
+
         public override void CSharedUpdate(bool isGuiCall = false)
         {
             base.CSharedUpdate();
@@ -40,10 +74,7 @@ namespace Spacats.Utils
 
             _deltaTime = Time.unscaledDeltaTime;
 
-            // FrameTimingManager: захватываем данные по завершённому кадру.
-            // Если фича включена в настройках (Player > Frame Timing Statistics),
-            // то в cpuMainThreadFrameTime придёт реальное CPU время main thread.
-            // Если не включено или платформа не поддерживает — вернётся 0.
+            // FrameTimingManager
             FrameTimingManager.CaptureFrameTimings();
             if (FrameTimingManager.GetLatestTimings(1, _frameTimings) > 0)
             {
@@ -54,6 +85,20 @@ namespace Spacats.Utils
                     _cpuRenderMs = t.cpuRenderThreadFrameTime;
                     _gpuMs = t.gpuFrameTime;
                     _timingReady = true;
+                }
+            }
+
+            // Memory — цепочка fallback: P/Invoke → Process → Profiler
+            if (!TryGetMemoryNative(out _memBytes))
+            {
+                try
+                {
+                    if (_process == null) _process = Process.GetCurrentProcess();
+                    _memBytes = (long)_process.WorkingSet64;
+                }
+                catch
+                {
+                    _memBytes = (long)UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong();
                 }
             }
         }
@@ -76,6 +121,21 @@ namespace Spacats.Utils
             return _defaultMonoFont;
         }
 
+        private static bool TryGetMemoryNative(out long bytes)
+        {
+            bytes = 0;
+            try
+            {
+                if (GetProcessMemoryInfo(Process.GetCurrentProcess().Handle, out var counters, _memoryCountersSize))
+                {
+                    bytes = (long)counters.WorkingSetSize;
+                    return bytes > 0;
+                }
+            }
+            catch { }
+            return false;
+        }
+
         private void OnGUI()
         {
             if (!ExecuteInEditor && !Application.isPlaying) return;
@@ -89,49 +149,73 @@ namespace Spacats.Utils
 
             Font mono = MonoFont != null ? MonoFont : GetDefaultMonospaceFont();
 
-            GUIStyle mainStyle = new GUIStyle(GUI.skin.label)
+            if (_mainStyle == null || _lastScreenW != screenWidth || _lastScreenH != screenHeight)
             {
-                fontSize = mainFontSize,
-                font = mono,
-                normal = { textColor = Color.white }
-            };
-
-            GUIStyle smallStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = smallFontSize,
-                font = mono,
-                normal = { textColor = Color.white }
-            };
+                _lastScreenW = (int)screenWidth;
+                _lastScreenH = (int)screenHeight;
+                _mainStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = mainFontSize,
+                    font = mono,
+                    normal = { textColor = Color.white }
+                };
+                _smallStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = smallFontSize,
+                    font = mono,
+                    normal = { textColor = Color.white }
+                };
+            }
 
             float x = PosX * screenWidth;
             float y = PosY * screenHeight;
 
             GUI.color = FontColor;
 
-            // Мгновенный FPS (без накопления)
             float fps = _deltaTime > 0f ? 1f / _deltaTime : 0f;
-            GUI.Label(new Rect(x, y, 300, 100), $"{fps:000}", mainStyle);
 
-            if (ShowExtra)
+            if (!ShowExtra)
             {
-                y += mainFontSize + 5;
+                // Только крупный FPS
+                GUI.Label(new Rect(x, y, 300, 100), $"{fps:000}", _mainStyle);
+            }
+            else
+            {
+                // Полный список под ShowExtra
 
-                int labelWidth = 4;
+                // 1 — GPU device name
+                GUI.Label(new Rect(x, y, screenWidth, 50), SystemInfo.graphicsDeviceName, _smallStyle);
+                y += smallFontSize + 2;
+
+                // 2 — CPU device name
+                GUI.Label(new Rect(x, y, screenWidth, 50), SystemInfo.processorType, _smallStyle);
+                y += smallFontSize + 2;
+
+                // 3 — FPS
+                GUI.Label(new Rect(x, y, 300, 50), $"FPS: {fps:000}", _smallStyle);
+                y += smallFontSize + 2;
+
+                // 4 — Memory
+                double memMB = _memBytes / (1024.0 * 1024.0);
+                GUI.Label(new Rect(x, y, 300, 50), $"MEM: {memMB.ToString("00.0", CultureInfo.CurrentCulture)} MB", _smallStyle);
+                y += smallFontSize + 2;
+
+                // 5-7 — CPU / GPU / CPU->GPU
                 if (_timingReady)
                 {
-                    GUI.Label(new Rect(x, y, 300, 50), $"{"CPU".PadRight(labelWidth)}: {_cpuMainMs:00.0} ms", smallStyle);
+                    GUI.Label(new Rect(x, y, 300, 50), $"CPU: {_cpuMainMs:00.0} ms", _smallStyle);
                     y += smallFontSize + 2;
-                    GUI.Label(new Rect(x, y, 300, 50), $"{"REND".PadRight(labelWidth)}: {_cpuRenderMs:00.0} ms", smallStyle);
+                    GUI.Label(new Rect(x, y, 300, 50), $"GPU: {_gpuMs:00.0} ms", _smallStyle);
                     y += smallFontSize + 2;
-                    GUI.Label(new Rect(x, y, 300, 50), $"{"GPU".PadRight(labelWidth)}: {_gpuMs:00.0} ms", smallStyle);
+                    GUI.Label(new Rect(x, y, 300, 50), $"CPU->GPU: {_cpuRenderMs:00.0} ms", _smallStyle);
                 }
                 else
                 {
-                    GUI.Label(new Rect(x, y, 300, 50), $"{"CPU".PadRight(labelWidth)}: -- ms", smallStyle);
+                    GUI.Label(new Rect(x, y, 300, 50), "CPU: -- ms", _smallStyle);
                     y += smallFontSize + 2;
-                    GUI.Label(new Rect(x, y, 300, 50), $"{"REND".PadRight(labelWidth)}: -- ms", smallStyle);
+                    GUI.Label(new Rect(x, y, 300, 50), "GPU: -- ms", _smallStyle);
                     y += smallFontSize + 2;
-                    GUI.Label(new Rect(x, y, 300, 50), $"{"GPU".PadRight(labelWidth)}: -- ms", smallStyle);
+                    GUI.Label(new Rect(x, y, 300, 50), "CPU->GPU: -- ms", _smallStyle);
                 }
             }
         }

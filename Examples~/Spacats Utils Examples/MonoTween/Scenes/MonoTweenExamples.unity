@@ -258,6 +258,7 @@ MonoBehaviour:
   ShowSLogs: 0
   _controllers:
   - {fileID: 520325641}
+  - {fileID: 565918264}
   - {fileID: 336219666}
   - {fileID: 717189481}
   - {fileID: 1573203292}
@@ -277,6 +278,7 @@ Transform:
   - {fileID: 1573203293}
   - {fileID: 717189482}
   - {fileID: 336219667}
+  - {fileID: 565918265}
   - {fileID: 520325642}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -324,6 +326,71 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 520325640}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 371722503}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &565918263
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 565918265}
+  - component: {fileID: 565918264}
+  m_Layer: 0
+  m_Name: '[0 SpaCats] GUIPermanentMessage'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &565918264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 565918263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a39728c45e0d934c978c0f2d80dba59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: spacatsutils::Spacats.Utils.GUIPermanentMessage
+  UniqueTag: 
+  ExecuteInEditor: 1
+  ShowLogs: 0
+  ShowCLogs: 0
+  ExecuteOrder: 0
+  PersistsAtScenes: []
+  PosX: 0.01
+  PosY: 0.729
+  FontSize: 0.0129
+  FontColor: {r: 1, g: 1, b: 1, a: 1}
+  MonoFont: {fileID: 0}
+  LogicEnabled: 1
+  _mainMessage: test2
+  _cachedFull: 'test2
+
+    0: test3
+
+    1: test4'
+  _messageLines:
+  - test3
+  - test4
+--- !u!4 &565918265
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 565918263}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}

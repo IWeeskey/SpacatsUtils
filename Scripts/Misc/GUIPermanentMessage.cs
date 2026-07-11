@@ -1,5 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace Spacats.Utils
@@ -16,7 +16,7 @@ namespace Spacats.Utils
                 return _instance;
             }
         }
-        
+
         public static bool HasInstance => _instance != null;
 
         [Header("Display Settings")]
@@ -29,16 +29,25 @@ namespace Spacats.Utils
         [Header("Logic Settings")]
         public bool LogicEnabled = true;
 
-        [SerializeField]private string _mainMessage = "";
-        [SerializeField]private string _fullString = "";
-        [SerializeField]private List<string> _messageLines = new List<string>(); 
-        
+        [SerializeField] private string _mainMessage = "";
+        [SerializeField] private string _cachedFull = "";
+        [SerializeField] private List<string> _messageLines = new List<string>();
+
+        // Cached GUIStyle
+        private GUIStyle _mainStyle;
+        private int _lastScreenW;
+        private int _lastScreenH;
+        private int _lastFontSize;
+
+        // StringBuilder для сборки без промежуточных аллокаций
+        private static readonly StringBuilder _sb = new StringBuilder(512);
+
         public string Message
         {
             get { return _mainMessage; }
             set { _mainMessage = value; }
         }
-        
+
         protected override void COnRegister()
         {
             base.COnRegister();
@@ -49,40 +58,51 @@ namespace Spacats.Utils
         {
             if (!ExecuteInEditor && !Application.isPlaying) return;
             if (!LogicEnabled) return;
-            
-            FormFullString();
+
+            BuildFullString();
+
             float screenWidth = Screen.width;
             float screenHeight = Screen.height;
 
             int mainFontSize = Mathf.RoundToInt(screenWidth * FontSize);
+            Font mono = MonoFont != null ? MonoFont : GetDefaultMonospaceFont();
 
-            GUIStyle mainStyle = new GUIStyle(GUI.skin.label)
+            if (_mainStyle == null || _lastScreenW != screenWidth || _lastScreenH != screenHeight || _lastFontSize != mainFontSize)
             {
-                fontSize = mainFontSize,
-                font = MonoFont != null ? MonoFont : GetDefaultMonospaceFont(),
-                normal = { textColor = Color.white }
-            };
+                _lastScreenW = (int)screenWidth;
+                _lastScreenH = (int)screenHeight;
+                _lastFontSize = mainFontSize;
+                _mainStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = mainFontSize,
+                    font = mono,
+                    normal = { textColor = Color.white }
+                };
+            }
 
             float x = PosX * screenWidth;
             float y = PosY * screenHeight;
             float width = 2000f;
-            float height = mainStyle.CalcHeight(new GUIContent(_fullString), width);
-            
-            GUI.color = FontColor;
+            float height = _mainStyle.CalcHeight(new GUIContent(_cachedFull), width);
 
-            
-            GUI.Label(new Rect(x, y, width, height), _fullString, mainStyle);
+            GUI.color = FontColor;
+            GUI.Label(new Rect(x, y, width, height), _cachedFull, _mainStyle);
         }
-        
-        private void FormFullString()
+
+        private void BuildFullString()
         {
-            _fullString = _mainMessage;
+            _sb.Clear();
+            _sb.Append(_mainMessage);
 
             for (int i = 0; i < _messageLines.Count; i++)
             {
-                string value = _messageLines[i];
-                _fullString += "\n" + i + ": " + value;
+                _sb.Append('\n');
+                _sb.Append(i);
+                _sb.Append(": ");
+                _sb.Append(_messageLines[i]);
             }
+
+            _cachedFull = _sb.ToString();
         }
 
         public void SetMessageLine(string value, int index)
@@ -92,13 +112,14 @@ namespace Spacats.Utils
             {
                 _messageLines.Add("");
             }
-            _messageLines[index] = value;
+            _messageLines[index] = value ?? "";
         }
 
         public void ClearAll()
         {
             _mainMessage = "";
             _messageLines.Clear();
+            _cachedFull = "";
         }
 
         private static Font _defaultMonoFont;
@@ -106,7 +127,6 @@ namespace Spacats.Utils
         {
             if (_defaultMonoFont != null) return _defaultMonoFont;
 
-            // Пробуем系统ные моноширинные шрифты — на каждой платформе хоть один да есть
             string[] candidates = { "Consolas", "Courier New", "Courier", "Menlo", "monospace" };
             foreach (string name in candidates)
             {
